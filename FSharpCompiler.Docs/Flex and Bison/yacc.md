@@ -792,23 +792,23 @@ Error recovery strategies are necessarily guesses. When they guess wrong, one sy
 
 ### Further Debugging
 
-If a Yacc/Bison grammar compiles properly but doesn’t do what you want when it runs, the yydebug parser-trace feature can help you figure out why.
+If a Yacc/Bison grammar compiles properly but doesn’t do what you want when it runs, the `yydebug` parser-trace feature can help you figure out why.
 
-To enable compilation of trace facilities, you must define the macro YYDEBUG when you compile the parser. You could use -DYYDEBUG=1 as a compiler option or you could put #define YYDEBUG 1 in the C declarations section of the grammar file. Alternatively, use the -t option when you run Yacc/Bison. We always define YYDEBUG so that debugging is always possible.
+To enable compilation of trace facilities, you must define the macro `YYDEBUG` when you compile the parser. You could use `-DYYDEBUG=1` as a compiler option or you could put `#define YYDEBUG 1` in the C declarations section of the grammar file. Alternatively, use the `-t` option when you run Yacc/Bison. We always define `YYDEBUG` so that debugging is always possible.
 
-The trace facility uses stderr, so you must add `#include <stdio.h>` to the C declarations section unless it is already there.
+The trace facility uses `stderr`, so you must add `#include <stdio.h>` to the C declarations section unless it is already there.
 
-Once you have compiled the program with trace facilities, the way to request a trace is to store a nonzero value in the variable yydebug. You can do this by making the C code do it (in main).
+Once you have compiled the program with trace facilities, the way to request a trace is to store a nonzero value in the variable `yydebug`. You can do this by making the C code do it (in `main`).
 
-Each step taken by the parser when yydebug is nonzero produces a line or two of trace information, written on stderr. The trace messages tell you these things:
+Each step taken by the parser when `yydebug` is nonzero produces a line or two of trace information, written on `stderr`. The trace messages tell you these things:
 
-• Each time the parser calls yylex, what kind of token was read.
+• Each time the parser calls `yylex`, what kind of token was read.
 
 • Each time a token is shifted, the depth and complete contents of the state stack.
 
 • Each time a rule is reduced, which rule it is, and the complete contents of the state stack afterward.
 
-To make sense of this information, it helps to refer to the listing file produced by the Yacc/Bison -v option. This file shows the meaning of each state in terms of positions in various rules, and also what each state will do with each possible input token. As you read the successive trace messages, you can see that the parser is functioning according to its specification in the listing file. Eventually you will arrive at the place where something undesirable happens, and you will see which parts of the grammar are to blame.
+To make sense of this information, it helps to refer to the listing file produced by the Yacc/Bison `-v` option. This file shows the meaning of each state in terms of positions in various rules, and also what each state will do with each possible input token. As you read the successive trace messages, you can see that the parser is functioning according to its specification in the listing file. Eventually you will arrive at the place where something undesirable happens, and you will see which parts of the grammar are to blame.
 
 ## C.7 Stages in Using Yacc/Bison
 
@@ -830,7 +830,7 @@ To turn this source code as written into a runnable program, you must follow the
 bison infile
 ```
 
-Here `infile` is the grammar file name, which usually ends in .y. The parser file’s name is made by replacing the .y with .tab.c. Thus, the bison foo.y filename yields foo.tab.c.
+Here `infile` is the grammar file name, which usually ends in `.y`. The parser file’s name is made by replacing the `.y` with `.tab.c`. Thus, the bison `foo.y` filename yields `foo.tab.c`.
 
 2. Compile the code output by Yacc/Bison, as well as any other source files.
 
