@@ -28,7 +28,7 @@ printf( "# of lines = %d, # of chars = %d\n", num_lines, num_chars );
 }
 ```
 
-This scanner counts the number of characters and the number of lines in its input (it produces no output other than the final report on the counts). The first line declares two globals, num lines and num chars, which are accessible both inside `yylex()` and in the `main()` routine declared after the second ”`%%`”.
+This scanner counts the number of characters and the number of lines in its input (it produces no output other than the final report on the counts). The first line declares two globals, `num_lines` and `num_chars`, which are accessible both inside `yylex()` and in the `main()` routine declared after the second ”`%%`”.
 
 There are two rules, one which matches a newline (“`\n`”) and increments both the line count and the character count, and one which matches any character other than a newline (indicated by the “`.`” regular expression).
 
@@ -288,7 +288,7 @@ Here is a program which compresses multiple blanks and tabs down to a single bla
 
 ```c
 %%
-[ \t]+ putchar( ’ ’ );
+[ \t]+ putchar( ' ' );
 [ \t]+$ /* ignore this token */
 ```
 

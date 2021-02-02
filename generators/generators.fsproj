@@ -8,11 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <None Include="E69.yacc" />
+    <Compile Include="E69ParseTable.fs" />
+    <Compile Include="ExpToken.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="E69Test.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FSharp.Idioms" Version="1.1.5" />
+    <PackageReference Include="FSharp.xUnit" Version="1.0.0" />
+    <PackageReference Include="FSharpCompiler.Parsing" Version="1.0.1" />
+    <PackageReference Include="FSharpCompiler.Yacc" Version="1.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
