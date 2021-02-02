@@ -1,4 +1,4 @@
-本文向大家推荐一个yacc语法自动构建器，`FSharpCompiler.Yacc`和`FSharpCompiler.Parsing`前者是解析器生成工具，后者是解析器的依赖项。顾名思义，这个编译器是专门为F#语言使用的。这个文件位于https://github.com/xp44mm/FSharpCompiler.Docs/tree/master/FSharpCompiler.Docs大家有问题，可以去提交issue，将会及时得到更正或补充。
+本文向大家推荐一个yacc语法自动构建器，`FSharpCompiler.Yacc`和`FSharpCompiler.Parsing`前者是解析器生成工具，后者是解析器的依赖项。顾名思义，这个编译器是专门为F#语言使用的。这个文件位于[](https://github.com/xp44mm/FSharpCompiler.Docs/tree/master/FSharpCompiler.Docs)大家有问题，可以去提交issue，将会及时得到更正或补充。
 
 龙书示例4.69：
 
@@ -107,12 +107,12 @@ let yacc = ParseTable.create(yaccFile.mainRules, yaccFile.precedences)
 ```F#
 module E69ParseTable
 
-let rules = set [...]
-let kernelSymbols = Map.ofList [...]
-let parsingTable = set [...]
+let rules = set [....]
+let kernelSymbols = Map.ofList [....]
+let parsingTable = set [....]
 ```
 
-我们可能经常升级改动输入文件，这是验证输出文件和输入文件是一致的方法：
+数字太长太枯燥，我们用点号略过。我们可能经常升级改动输入文件，这是验证输出文件和输入文件是一致的方法：
 
 ```F#
     [<Fact>]
@@ -122,7 +122,7 @@ let parsingTable = set [...]
         Should.equal yacc.parsingTable E69ParseTable.parsingTable
 ```
 
-这里需要添加NuGet程序包`FSharp.xUnit`，包里面只有一个方法`Should.equal x y`。
+这里需要NuGet程序包`FSharp.xUnit`，包里面只有一个方法`Should.equal x y`。这个方法好处是可以类型推导，省去输入类型参数的麻烦。
 
 这就是yacc的基本用法。下一步，我们将用生成的结果，构造一个解析器。
 
@@ -231,7 +231,7 @@ type ParseTree<'tok> =
     | Terminal of 'tok
 ```
 
-这个数据结构是自解释的，Interior是内部节点，非终结符号，Terminal是终结符号。
+这个数据结构是自解释的，Interior是内部节点，也就是龙书中的非终结符号，Terminal是终结符号。
 
 如何从普通文本得到词法符记序列，利用.net库中的字符串和正则表达式方法，很容易就可以写一个词法分析器，把它作为词法符记类型的静态构造函数是很自然的：
 
@@ -294,4 +294,4 @@ type ParseTree<'tok> =
 [DIGIT 1;PLUS;DIGIT 2;STAR;LPAREN;DIGIT 4;PLUS;DIGIT 3;RPAREN;EOL]
 ```
 
-这个实例的源代码在https://github.com/xp44mm/FSharpCompiler.Docs上。
+这个实例的源代码在[](https://github.com/xp44mm/FSharpCompiler.Docs)上。
