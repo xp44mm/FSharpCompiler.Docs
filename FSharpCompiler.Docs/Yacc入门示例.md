@@ -1,6 +1,8 @@
-本文向大家推荐一个yacc语法自动构建器，`FSharpCompiler.Yacc`和`FSharpCompiler.Parsing`前者是解析器生成工具，后者是解析器的依赖项。顾名思义，这个编译器是专门为F#语言使用的。这个文件位于[](https://github.com/xp44mm/FSharpCompiler.Docs/tree/master/FSharpCompiler.Docs)大家有问题，可以去提交issue，将会及时得到更正或补充。
+# Yacc入门示例
 
-龙书示例4.69：
+本文向大家推荐一个yacc语法自动构建器，`FSharpCompiler.Yacc`和`FSharpCompiler.Parsing`前者是解析器生成工具，后者是解析器的依赖项。顾名思义，这个编译器是专门为F#语言使用的。这个文件位于[GitHub](https://github.com/xp44mm/FSharpCompiler.Docs/tree/master/FSharpCompiler.Docs)大家有问题，可以去提交issue，将会及时得到更正或补充。
+
+龙书示例4.69，文法如下：
 
 ```
 E -> E + T | T
@@ -24,7 +26,7 @@ factor : "(" expr ")"
        ;
 ```
 
-这个文件可以任何的扩展名，建议使用`*.yacc`作为扩展名。表示这个文件是yacc语法规范文件。
+文法文件与文法几乎相同，一一对应。这个文件可以任何的扩展名，建议使用`*.yacc`作为扩展名。表示这个文件是yacc语法规范文件。
 
 说明：
 
@@ -196,7 +198,7 @@ let parseTokens tokens =
         output.WriteLine(result)
 ```
 
-可以得到结果：
+可以得到语法树的结果：
 
 ```F#
         let y = Interior("line",[
@@ -223,7 +225,7 @@ let parseTokens tokens =
             Terminal EOL])
 ```
 
-返回一个抽象语法树对象，这个树用可区分联合递归表达，此对象在`FSharpCompiler.Parsing`包中定义：
+这是一个抽象语法树对象，这个树用可区分联合递归表达，此对象在`FSharpCompiler.Parsing`包中定义：
 
 ```F#
 type ParseTree<'tok> =
@@ -294,4 +296,4 @@ type ParseTree<'tok> =
 [DIGIT 1;PLUS;DIGIT 2;STAR;LPAREN;DIGIT 4;PLUS;DIGIT 3;RPAREN;EOL]
 ```
 
-这个实例的源代码在[](https://github.com/xp44mm/FSharpCompiler.Docs)上。
+这个实例的源代码在[GitHub](https://github.com/xp44mm/FSharpCompiler.Docs)上。

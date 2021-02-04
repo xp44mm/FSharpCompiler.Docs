@@ -13,6 +13,13 @@
     <Compile Include="ExpToken.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="E69Test.fs" />
+    <None Include="C4F59.yacc" />
+    <Compile Include="C4F59ParseTable.fs" />
+    <Compile Include="C4F59Token.fs" />
+    <Compile Include="C4F59Parser.fs" />
+    <Compile Include="C4F59Expr.fs" />
+    <Compile Include="C4F59Translation.fs" />
+    <Compile Include="C4F59Test.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
