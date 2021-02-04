@@ -19,7 +19,13 @@ type C4F59Test(output:ITestOutputHelper) =
     let text = File.ReadAllText(path)
     let yaccFile = YaccFile.parse text
 
+    // 查看生成的表是否有冲突
+    let tbl = AmbiguousTable.create yaccFile.mainRules
+
     let yacc = ParseTable.create(yaccFile.mainRules, yaccFile.precedences)
+
+
+
     [<Fact>]
     member this.``yacc file content``() =
         //show yaccFile
@@ -89,3 +95,42 @@ type C4F59Test(output:ITestOutputHelper) =
 
         let result = Render.stringify exprs
         output.WriteLine(result)
+
+    [<Fact>]
+    member this.``there are not production conflicts``() =
+        //解析表没有产生式冲突
+        let pconflicts = ConflictFactory.productionConflict tbl.ambiguousTable
+        Assert.True(pconflicts.IsEmpty)
+
+    [<Fact>]
+    member this.``show warning``() =
+        // 符号多用警告
+        let warning = ConflictFactory.overloadsWarning tbl
+
+        //show warning
+        Assert.True(warning.IsEmpty)
+
+
+    [<Fact>]
+    member this.``resolve shift reduce conflicts``() =
+        //优先级冲突
+        let srconflicts = ConflictFactory.shiftReduceConflict tbl
+        //show srconflicts
+        let y = set [
+            set [["expr";"-";"expr"];["expr";"expr";"*";"expr"]];
+            set [["expr";"-";"expr"];["expr";"expr";"+";"expr"]];
+            set [["expr";"-";"expr"];["expr";"expr";"-";"expr"]];
+            set [["expr";"-";"expr"];["expr";"expr";"/";"expr"]];
+            set [["expr";"expr";"*";"expr"]];
+            set [["expr";"expr";"*";"expr"];["expr";"expr";"+";"expr"]];
+            set [["expr";"expr";"*";"expr"];["expr";"expr";"-";"expr"]];
+            set [["expr";"expr";"*";"expr"];["expr";"expr";"/";"expr"]];
+            set [["expr";"expr";"+";"expr"]];
+            set [["expr";"expr";"+";"expr"];["expr";"expr";"-";"expr"]];
+            set [["expr";"expr";"+";"expr"];["expr";"expr";"/";"expr"]];
+            set [["expr";"expr";"-";"expr"]];
+            set [["expr";"expr";"-";"expr"];["expr";"expr";"/";"expr"]];
+            set [["expr";"expr";"/";"expr"]]]
+
+        Should.equal y srconflicts
+
