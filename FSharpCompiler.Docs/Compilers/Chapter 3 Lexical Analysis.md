@@ -1,6 +1,6 @@
 # Chapter 3 Lexical Analysis
 
-In this chapter we show how to construct a lexical analyzer. To implement a lexical analyzer by hand, it helps to start with a diagram or other description for the lexemes of each token. We can then write code to identify each occurrence of each lexeme on the input and to return information about the token identified. 
+In this chapter we show how to construct a lexical analyzer. To implement a lexical analyzer by hand, it helps to start with a diagram or other description for the lexemes of each token. We can then write code to identify each occurrence of each lexeme on the input and to return information about the token identified.
 
 We can also produce a lexical analyzer automatically by specifying the lexeme patterns to a lexical-analyzer generator and compiling those patterns into code that functions as a lexical analyzer. This approach makes it easier to modify a lexical analyzer, since we have only to rewrite the affected patterns, not the entire program. It also speeds up the process of implementing the lexical analyzer, since the programmer specifies the software at the very high level of patterns and relies on the generator to produce the detailed code. We shall introduce in Section 3.5 a lexical-analyzer generator called Lex (or Flex in a more recent embodiment).
 
@@ -12,11 +12,11 @@ Regular expressions are an important notation for specifying lexeme patterns. Wh
 
 ### 3.3.1 Strings and Languages
 
-An *alphabet* is any finite set of symbols. Typical examples of symbols are letters, digits, and punctuation. The set {0, 1} is the *binary alphabet*. ASCII is an important example of an alphabet; it is used in many software systems. Unicode, which includes approximately 100,000 characters from alphabets around the world, is another important example of an alphabet. 
+An *alphabet* is any finite set of symbols. Typical examples of symbols are letters, digits, and punctuation. The set {0, 1} is the *binary alphabet*. ASCII is an important example of an alphabet; it is used in many software systems. Unicode, which includes approximately 100,000 characters from alphabets around the world, is another important example of an alphabet.
 
 A *string* over an alphabet is a finite sequence of symbols drawn from that alphabet. In language theory, the terms "sentence" and "word" are often used as synonyms for "string." The length of a string s, usually written $|s|$ is the number of occurrences of symbols in s. For example, `banana` is a string of length six. The empty string, denoted €, is the string of length zero.
 
-A language is any countable set of strings over some fixed alphabet. This definition is very broad. Abstract languages like Ø, the *empty set*, or {€}, the set containing only the empty string, are languages under this definition. So too are the set of all syntactically well-formed C programs and the set of all grammatically correct English sentences, although the latter two languages are difficult to specify exactly. Note that the definition of "language" does not require that any meaning be ascribed to the strings in the language. Methods for defining the "meaning" of strings are discussed in Chapter 5. 
+A language is any countable set of strings over some fixed alphabet. This definition is very broad. Abstract languages like Ø, the *empty set*, or {€}, the set containing only the empty string, are languages under this definition. So too are the set of all syntactically well-formed C programs and the set of all grammatically correct English sentences, although the latter two languages are difficult to specify exactly. Note that the definition of "language" does not require that any meaning be ascribed to the strings in the language. Methods for defining the "meaning" of strings are discussed in Chapter 5.
 
 ---
 
@@ -28,11 +28,11 @@ The following string-related terms are commonly used:
 
 2. A *suffix* of string s is any string obtained by removing zero or more symbols from the beginning of s. For example, nana, banana, and € are suffixes of banana.
 
-3. A *substring* of s is obtained by deleting any prefix and any suffix from s. For instance, banana, nan, and € are substrings of banana. 
+3. A *substring* of s is obtained by deleting any prefix and any suffix from s. For instance, banana, nan, and € are substrings of banana.
 
 4. The *proper* prefixes, suffixes, and substrings of a string s are those, prefixes, suffixes, and substrings, respectively, of s that are not € or not equal to s itself.
 
-5. A *subsequence* of s is any string formed by deleting zero or more not necessarily consecutive positions of s. For example, `baan` is a subsequence of `banana`. 
+5. A *subsequence* of s is any string formed by deleting zero or more not necessarily consecutive positions of s. For example, `baan` is a subsequence of `banana`.
 
 ---
 
@@ -42,7 +42,7 @@ If we think of concatenation as a product, we can define the "exponentiation" of
 
 ### 3.3.2 Operations on Languages
 
-In lexical analysis, the most important operations on languages are union, concatenation, and closure, which are defined formally in Fig. 3.6. Union is the familiar operation on sets. The concatenation of languages is all strings formed by taking a string from the first language and a string from the second language, in all possible ways, and concatenating them. The (Kleene) closure of a language L, denoted L*, is the set of strings you get by concatenating L zero or more times. Note that L^0^, the "concatenation of L zero times," is defined to be {€}, and inductively, L^i^ is L^i-1^L. Finally, the positive closure, denoted L^+^, is the same as the Kleene closure, but without the term L^0^. That is, € will not be in L^+^ unless it is in L itself. 
+In lexical analysis, the most important operations on languages are union, concatenation, and closure, which are defined formally in Fig. 3.6. Union is the familiar operation on sets. The concatenation of languages is all strings formed by taking a string from the first language and a string from the second language, in all possible ways, and concatenating them. The (Kleene) closure of a language L, denoted L*, is the set of strings you get by concatenating L zero or more times. Note that L^0^, the "concatenation of L zero times," is defined to be {€}, and inductively, L^i^ is L^i-1^L. Finally, the positive closure, denoted L^+^, is the same as the Kleene closure, but without the term L^0^. That is, € will not be in L^+^ unless it is in L itself.
 
 | OPERATION                | DEFINITION  AND  NOTATION               |
 | ------------------------ | --------------------------------------- |
@@ -107,7 +107,7 @@ a) The unary operator `*` has highest precedence and is left associative.
 
 b) Concatenation has second highest precedence and is left associative.
 
-c) `|` has lowest precedence and is left associative. 
+c) `|` has lowest precedence and is left associative.
 
 Under these conventions, for example, we may replace the regular expression `(a)|((b)*(c))` by `a|b*c`. Both expressions denote the set of strings that are either a single `a` or are zero or more `b`'s followed by one `c`.
 
@@ -137,15 +137,15 @@ A language that can be defined by a regular expression is called a *regular set*
 | $r* = (r|\epsilon)*$             | € is guaranteed in a closure        |
 | $r** = r*$                       | * is idempotent                     |
 
-Figure 3.7: Algebraic laws for regular expressions 
+Figure 3.7: Algebraic laws for regular expressions
 
 ### 3.3.4 Regular Definitions
 
-For notational convenience, we may wish to give names to certain regular expressions and use those names in subsequent expressions, as if the names were themselves symbols. If ∑ is an alphabet of basic symbols, then a *regular definition* is a sequence of definitions of the form: 
+For notational convenience, we may wish to give names to certain regular expressions and use those names in subsequent expressions, as if the names were themselves symbols. If ∑ is an alphabet of basic symbols, then a *regular definition* is a sequence of definitions of the form:
 
 ```
-d1 -> r1 
-d2 -> r2 
+d1 -> r1
+d2 -> r2
   ...
 dn -> rn
 ```
@@ -158,27 +158,27 @@ where:
 
 By restricting r~i~ to ∑ and the previously defined d's, we avoid recursive definitions, and we can construct a regular expression over ∑ alone, for each r~i~. We do so by first replacing uses of d1 in r2 (which cannot use any of the d's except for d1, then replacing uses of d1 and d2 in r3 by r1 and (the substituted) r2, and so on. Finally, in r_n we replace each d_i, for i = 1, 2, ... , n-1, by the substituted version of r_i, each of which has only symbols of ∑.
 
-**Example 3.5:** C identifiers are strings of letters, digits, and underscores. Here is a regular definition for the language of C identifiers. We shall conventionally use italics for the symbols defined in regular definitions. 
+**Example 3.5:** C identifiers are strings of letters, digits, and underscores. Here is a regular definition for the language of C identifiers. We shall conventionally use italics for the symbols defined in regular definitions.
 
 ```F#
 letter_ -> A | B | ... | Z | a | b | ... | z | _
 digit -> 0 | 1 | ... | 9
-id -> letter_ ( letter_ | digit ) * 
+id -> letter_ ( letter_ | digit ) *
 ```
 
 □
 
-**Example 3.6:** Unsigned numbers (integer or floating point) are strings such as 5280, 0.01234, 6.336E4, or 1.89E-4. The regular definition 
+**Example 3.6:** Unsigned numbers (integer or floating point) are strings such as 5280, 0.01234, 6.336E4, or 1.89E-4. The regular definition
 
 ```
-digit -> 0 | 1 | ... | 9  
+digit -> 0 | 1 | ... | 9
 digits -> digit digit*
 optionalFraction -> . digits | €
 optionalExponent -> ( E ( + | - | € ) digits ) | €
-number -> digits optionalFraction optionalExponent 
+number -> digits optionalFraction optionalExponent
 ```
 
-is a precise specification for this set of strings. That is, an `optionalFraction` is either a decimal point (dot) followed by one or more digits, or it is missing (the empty string) . An `optionalExponent`, if not missing, is the letter E followed by an optional + or - sign, followed by one or more digits. Note that at least one digit must follow the dot, so number does not match 1. , but does match 1.0.  
+is a precise specification for this set of strings. That is, an `optionalFraction` is either a decimal point (dot) followed by one or more digits, or it is missing (the empty string) . An `optionalExponent`, if not missing, is the letter E followed by an optional + or - sign, followed by one or more digits. Note that at least one digit must follow the dot, so number does not match 1. , but does match 1.0.
 
 □
 
@@ -192,20 +192,20 @@ Since Kleene introduced regular expressions with the basic operators for union, 
 
 3. Character classes. A regular expression `a1 | a2 | ... | an`, where the a_i's are each symbols of the alphabet, can be replaced by the shorthand [a1 a2 ... an]. More importantly, when a1 , a2, ... , an form a logical sequence, e.g., consecutive uppercase letters, lowercase letters, or digits, we can replace them by a1-an, that is, just the first and last separated by a hyphen. Thus, `[abc]` is shorthand for `a|b|c`, and `[a-z]` is shorthand for `a|b| ... |z`.
 
-**Example 3.7:** Using these shorthands, we can rewrite the regular definition of Example 3.5 as: 
+**Example 3.7:** Using these shorthands, we can rewrite the regular definition of Example 3.5 as:
 
 ```F#
 letter_ -> [A-Za-z_]
 digit -> [0-9]
-id -> letter_ ( letter_ | digit ) * 
+id -> letter_ ( letter_ | digit ) *
 ```
 
-The regular definition of Example 3.6 can also be simplified: 
+The regular definition of Example 3.6 can also be simplified:
 
 ```F#
 digit -> [0-9]
 digits -> digit+
-number -> digits ( . digits)? ( E [+-]? digits )? 
+number -> digits ( . digits)? ( E [+-]? digits )?
 ```
 □
 
@@ -223,7 +223,7 @@ Figure 3.22: Creating a lexical analyzer with Lex
 
 The normal use of the compiled C program, referred to as `a.out` in Fig. 3.22, is as a subroutine of the parser. It is a C function that returns an integer, which is a code for one of the possible token names. The attribute value, whether it be another numeric code, a pointer to the symbol table, or nothing, is placed in a global variable **yylval**[^2], which is shared between the lexical analyzer and parser, thereby making it simple to return both the name and an attribute value of a token.
 
-[^2]: Incidentally, the `yy` that appears in `yylval` and `lex.yy.c` refers to the Yacc parser generator, which we shall describe in Section 4.9, and which is commonly used in conjunction with Lex. 
+[^2]: Incidentally, the `yy` that appears in `yylval` and `lex.yy.c` refers to the Yacc parser generator, which we shall describe in Section 4.9, and which is commonly used in conjunction with Lex.
 
 ### 3.5.2 Structure of Lex Programs
 
@@ -304,7 +304,7 @@ Figure 3.23: Lex program for the tokens of Fig. 3.12
 
 In the declarations section we see a pair of special brackets, `%{` and `%}`. Anything within these brackets is copied directly to the file `lex.yy.c`, and is not treated as a regular definition. It is common to place there the definitions of the manifest constants, using C `#define` statements to associate unique integer codes with each of the manifest constants. In our example, we have listed in a comment the names of the manifest constants, LT, IF, and so on, but have not shown them defined to be particular integers.[^3]
 
-[^3]: If Lex is used along with Yacc, then it would be normal to define the manifest constants in the Yacc program and use them without definition in the Lex program. Since `lex.yy.c` is compiled with the Yacc output, the constants thus will be available to the actions in the Lex program. 
+[^3]: If Lex is used along with Yacc, then it would be normal to define the manifest constants in the Yacc program and use them without definition in the Lex program. Since `lex.yy.c` is compiled with the Yacc output, the constants thus will be available to the actions in the Lex program.
 
 Also in the declarations section is a sequence of regular definitions. These use the extended notation for regular expressions described in Section 3.3.5. Regular definitions that are used in later definitions or in the patterns of the translation rules are surrounded by curly braces. Thus, for instance, `delim` is defined to be a shorthand for the character class consisting of the blank, the tab, and the newline; the latter two are represented, as in all UNIX commands, by backslash followed by t or n, respectively. Then, `ws` is defined to be one or more delimiters, by the regular expression `{delim}+`.
 
@@ -370,7 +370,7 @@ For instance, suppose this pattern is asked to match a prefix of input:
 IF(A<(B+C)*D)THEN ...
 ```
 
-the first two characters match `IF`, the next character matches `\(` , the next nine characters match `.*`, and the next two match `\)` and letter. Note the fact that the first right parenthesis (after C) is not followed by a letter is irrelevant; we only need to find some way of matching the input to the pattern. We conclude that the letters IF constitute the lexeme, and they are an instance of token **if**. 
+the first two characters match `IF`, the next character matches `\(` , the next nine characters match `.*`, and the next two match `\)` and letter. Note the fact that the first right parenthesis (after C) is not followed by a letter is irrelevant; we only need to find some way of matching the input to the pattern. We conclude that the letters IF constitute the lexeme, and they are an instance of token **if**.
 
 □
 
@@ -490,7 +490,7 @@ The *language defined* ( or *accepted*) by an NFA is the set of strings labeling
 0--€-->1--a-->2--a-->2--a-->2
 ```
 
-Note that €'s "disappear" in a concatenation, so the label of the path is `aaa`. 
+Note that €'s "disappear" in a concatenation, so the label of the path is `aaa`.
 
 □
 
@@ -528,14 +528,14 @@ While the NFA is an abstract representation of an algorithm to recognize the str
 **METHOD:** Apply the algorithm in Fig. 3.27 to the input string x. The function `move(s, c)` gives the state to which there is an edge from state s on input c. The function `nextChar` returns the next character of the input string x. □
 
 ```c
-    s  =  s.[0]; 
-    c  =  nextChar(); 
-    while ( c  !=  eof )  { 
-        s  =  move(s, c ); 
-        c  =  nextChar(); 
-    } 
-    if ( s is in F ) return "yes"; 
-    else return "no"; 
+    s  =  s.[0];
+    c  =  nextChar();
+    while ( c  !=  eof )  {
+        s  =  move(s, c );
+        c  =  nextChar();
+    }
+    if ( s is in F ) return "yes";
+    else return "no";
 ```
 
 Figure 3.27: Simulating a DFA
@@ -560,7 +560,7 @@ let simulate (inp:string) =
         | Some c ->
             let s = move s c
             loop s
-        | _ ->     
+        | _ ->
             Console.WriteLine(if finals.Contains s then "yes" else "no")
 
     loop 0
@@ -581,7 +581,7 @@ start-->0
 3--b-->0
 ```
 
-Figure 3.28: DFA accepting `(a|b)*abb` 
+Figure 3.28: DFA accepting `(a|b)*abb`
 
 DFA的轉換表，上圖的代碼表示：
 
@@ -618,16 +618,16 @@ It is possible that the number of DFA states is exponential in the number of NFA
 
 **OUTPUT:** A DFA D accepting the same language as N.
 
-**METHOD:** Our algorithm constructs a transition table `Dtran` for D. Each state of D is a set of NFA states, and we construct `Dtran` so D will simulate "in parallel" all possible moves N can make on a given input string. Our first problem is to deal with €-transitions of N properly. In Fig. 3.31 we see the definitions of several functions that describe basic computations on the states of N that are needed in the algorithm. Note that s is a single state of N, while T is a set of states of N. 
+**METHOD:** Our algorithm constructs a transition table `Dtran` for D. Each state of D is a set of NFA states, and we construct `Dtran` so D will simulate "in parallel" all possible moves N can make on a given input string. Our first problem is to deal with €-transitions of N properly. In Fig. 3.31 we see the definitions of several functions that describe basic computations on the states of N that are needed in the algorithm. Note that s is a single state of N, while T is a set of states of N.
 
 + €-closure( s ) ：
-  Set of NFA states reachable from NFA state `s` on €-transitions alone. 
-  
+  Set of NFA states reachable from NFA state `s` on €-transitions alone.
+
 + €-closure( T ) ：
-  Set of NFA states reachable from some NFA state s in set `T` on €-transitions alone; =`∪s in T €-closure(s)`. 
-  
+  Set of NFA states reachable from some NFA state s in set `T` on €-transitions alone; =`∪s in T €-closure(s)`.
+
 + move( T, a ) ：
-  Set of NFA states to which there is a transition on input symbol `a` from some state s in T. 
+  Set of NFA states to which there is a transition on input symbol `a` from some state s in T.
 
 Figure 3.31: Operations on NFA states
 
@@ -699,7 +699,7 @@ start-->0
 9--b-->10("(10)")
 ```
 
-Figure 3.34: NFA N for `(a|b)*abb` 
+Figure 3.34: NFA N for `(a|b)*abb`
 
 ```F#
 let nfaTransitionTable = [
@@ -721,10 +721,10 @@ let nfaTransitionTable = [
 
 The start state A of the equivalent DFA is €-closure(0), or A = {0, 1, 2, 4, 7}, since these are exactly the states reachable from state 0 via a path all of whose edges have label €. Note that a path can have zero edges, so state 0 is reachable from itself by an €-labeled path.
 
-The input alphabet is {a, b}. Thus, our first step is to mark A and compute Dtran[A, a] = €-closure(move(A, a)) and Dtran[A, b] = €-closure(move(A, b)) . Among the states 0, 1, 2, 4, and 7, only 2 and 7 have transitions on a, to 3 and 8, respectively. Thus, move(A, a) = {3, 8}. Also, €-closure( {3, 8}) = {1, 2, 3, 4, 6, 7, 8 } , so we conclude 
+The input alphabet is {a, b}. Thus, our first step is to mark A and compute Dtran[A, a] = €-closure(move(A, a)) and Dtran[A, b] = €-closure(move(A, b)) . Among the states 0, 1, 2, 4, and 7, only 2 and 7 have transitions on a, to 3 and 8, respectively. Thus, move(A, a) = {3, 8}. Also, €-closure( {3, 8}) = {1, 2, 3, 4, 6, 7, 8 } , so we conclude
 
 ```
-Dtran[A, a] = €-closure( move(A, a)) = €-closure( {3, 8}) = {1, 2, 3, 4, 6, 7, 8} 
+Dtran[A, a] = €-closure( move(A, a)) = €-closure( {3, 8}) = {1, 2, 3, 4, 6, 7, 8}
 ```
 
 Let us call this set B, so Dtran[A, a] = B.
@@ -735,7 +735,7 @@ Now, we must compute Dtran[A, b]. Among the states in A, only 4 has a transition
 Dtran[A, b] = €-closure( {5}) = {1, 2, 4, 5, 6, 7}
 ```
 
-Let us call the above set C, so Dtran[A, b] = C. 
+Let us call the above set C, so Dtran[A, b] = C.
 
 | NFA STATE              | DFA STATE | a    | b    |
 | ---------------------- | --------- | ---- | ---- |
@@ -774,7 +774,7 @@ Figure 3.36: Result of applying the subset construction to Fig. 3.34
 ### ~~3.7.3 Efficiency of NFA Simulation~~
 
 
-### 3.7.4 Construction of an NFA from a Regular Expression 
+### 3.7.4 Construction of an NFA from a Regular Expression
 
 We now give an algorithm for converting any regular expression to an NFA that defines the same language. The algorithm is syntax-directed, in the sense that it works recursively up the parse tree for the regular expression. For each subexpression the algorithm constructs an NFA with a single accepting state.
 
@@ -836,11 +836,11 @@ where again i and ƒ are new states,  the start and accepting states, respective
    s0(start)-->i
    i-.-|"N(s)"|j
    j-.-|"N(t)"|f
-   
+
    ```
-   
+
    Figure 3.41: NFA for the concatenation of two regular expressions
-   
+
 3. Suppose `r = s*` . Then for r we construct the NFA N(r) shown in Fig. 3.42. Here, i and f are new states, the start state and lone accepting state of N(r). To get from i to f, we can either follow the introduced path labeled €, which takes care of the one string in L(s)^0^, or we can go to the start state of N(s), through that NFA, then from its accepting state back to its start state zero or more times. These options allow N(r) to accept all the strings in L(s)^1^, L(s)^2^, and so on, so the entire set of strings accepted by N(r) is L(s*) :
 
    ```mermaid
@@ -855,7 +855,7 @@ where again i and ƒ are new states,  the start and accepting states, respective
    end
    k--€-->f
    ```
-   
+
    Figure 3.42: NFA for the closure of a regular expression
 
 4. Finally, suppose r = (s). Then L(r) = L(s), and we can use the NFA N(s) as N(r).
@@ -885,7 +885,7 @@ let r9 = Cat(r7,r8)
 let r11 = Cat(r9,r10)
 ```
 
-Figure 3.43: Parse tree for `(a|b)*abb` 
+Figure 3.43: Parse tree for `(a|b)*abb`
 
 ```
 start->(2)-a->((3))
@@ -913,7 +913,7 @@ start-->1
 
 Figure 3.44: NFA for r~3~
 
-The NFA for r~4~ = (r~3~) is the same as that for r~3~ . The NFA for r~5~ = (r~3~ )* is then as shown in Fig. 3.45. We have used the construction in Fig. 3.42 to build this NFA from the NFA in Fig. 3.44. 
+The NFA for r~4~ = (r~3~) is the same as that for r~3~ . The NFA for r~5~ = (r~3~ )* is then as shown in Fig. 3.45. We have used the construction in Fig. 3.42 to build this NFA from the NFA in Fig. 3.44.
 
 ```mermaid
 graph LR
@@ -931,7 +931,7 @@ start-->0
 6--€-->1
 ```
 
-Figure 3.45: NFA for r~5~ 
+Figure 3.45: NFA for r~5~
 
 Now, consider subexpression r~6~ , which is another a. We use the basis construction for a again, but we must use new states. It is not permissible to reuse the NFA we constructed for r~1~ , even though r~1~ and r~6~ are the same expression. The NFA for r~6~ is:
 
@@ -962,11 +962,11 @@ Figure 3.46: NFA for r~7~
 
 ### 3.7.5 Efficiency of String-Processing Algorithms
 
-We observed that Algorithm 3.18 processes a string x in time O(|x|) , while in Section 3.7.3 we concluded that we could simulate an NFA in time proportional to the product of |x| and the size of the NFA's transition graph. Obviously, it is faster to have a DFA to simulate than an NFA, so we might wonder whether it ever makes sense to simulate an NFA.
+We observed that Algorithm 3.18 processes a string x in time O(|x|), while in Section 3.7.3 we concluded that we could simulate an NFA in time proportional to the product of |x| and the size of the NFA's transition graph. Obviously, it is faster to have a DFA to simulate than an NFA, so we might wonder whether it ever makes sense to simulate an NFA.
 
-One issue that may favor an NFA is that the subset construction can, in the worst case, exponentiate the number of states. While in principle, the number of DFA states does not influence the running time of Algorithm 3.18, should the number of states become so large that the transition table does not fit in main memory, then the true running time would have to include disk I/O and therefore rise noticeably. 
+One issue that may favor an NFA is that the subset construction can, in the worst case, exponentiate the number of states. While in principle, the number of DFA states does not influence the running time of Algorithm 3.18, should the number of states become so large that the transition table does not fit in main memory, then the true running time would have to include disk I/O and therefore rise noticeably.
 
-**Example 3.25:** Consider the family of languages described by regular expressions of the form `Ln = (a|b)*a(a|b){n-1}`, that is, each language Ln consists of strings of a's and b's such that the nth character to the left of the right end holds a. An n + 1-state NFA is easy to construct. It stays in its initial state under any input, but also has the option, on input a, of going to state 1. From state 1, it goes to state 2 on any input, and so on, until in state n it accepts. Figure 3.47 suggests this NFA. 
+**Example 3.25:** Consider the family of languages described by regular expressions of the form `Ln = (a|b)*a(a|b){n-1}`, that is, each language Ln consists of strings of a's and b's such that the nth character to the left of the right end holds a. An n + 1-state NFA is easy to construct. It stays in its initial state under any input, but also has the option, on input a, of going to state 1. From state 1, it goes to state 2 on any input, and so on, until in state n it accepts. Figure 3.47 suggests this NFA.
 
 ```mermaid
 graph LR
@@ -994,7 +994,7 @@ The time taken by the subset construction is highly dependent on the number of s
 
 Suppose we start with a regular expression r and convert it to an NFA. This NFA has at most 2|r| states and at most 4|r| transitions. Moreover, there are at most |r| input symbols. Thus, for every DFA state constructed, we must construct at most |r| new states, and each one takes at most O(|r|) time. The time to construct a DFA of s states is thus O(|r|^2^ s).
 
-In the common case where s is about |r|, the subset construction takes time O(|r|^3^). However, in the worst case, as in Example 3.25, this time is O(|r|^2^ 2^|r|^). Figure 3.48 summarizes the options when one is given a regular expression r and wants to produce a recognizer that will tell whether one or more strings x are in L(r). 
+In the common case where s is about |r|, the subset construction takes time O(|r|^3^). However, in the worst case, as in Example 3.25, this time is O(|r|^2^ 2^|r|^). Figure 3.48 summarizes the options when one is given a regular expression r and wants to produce a recognizer that will tell whether one or more strings x are in L(r).
 
 ```
 | AUTOMATON        | INITIAL            | PER STRING   |
@@ -1008,7 +1008,7 @@ Figure 3.48: Initial cost and per-string-cost of various methods of recognizing 
 
 If the per-string cost dominates, as it does when we build a lexical analyzer, we clearly prefer the DFA. However, in commands like grep, where we run the automaton on only one string, we generally prefer the NFA. It is not until |x| approaches |r|^3^ that we would even think about converting to a DFA.
 
-There is, however, a mixed strategy that is about as good as the better of the NFA and the DFA strategy for each expression r and string x. Start off simulating the NFA, but remember the sets of NFA states ( i.e., the DFA states ) and their transitions, as we compute them. Before processing the current set of NFA states and the current input symbol, check to see whether we have already computed this transition, and use the information if so. 
+There is, however, a mixed strategy that is about as good as the better of the NFA and the DFA strategy for each expression r and string x. Start off simulating the NFA, but remember the sets of NFA states ( i.e., the DFA states ) and their transitions, as we compute them. Before processing the current set of NFA states and the current input symbol, check to see whether we have already computed this transition, and use the information if so.
 
 ## 3.8 Design of a Lexical-Analyzer Generator
 
@@ -1051,12 +1051,12 @@ s0--€-->n("->() N(pn) (())")
 
 Figure 3.50: An NFA constructed from a Lex program
 
-**Example 3.26:** We shall illustrate the ideas of this section with the following simple, abstract example: 
+**Example 3.26:** We shall illustrate the ideas of this section with the following simple, abstract example:
 
 ```
-a    { action A1  for pattern P1  } 
-abb  { action A2  for pattern P2  } 
-a*b+ { action A3  for pattern P3  } 
+a    { action A1  for pattern P1  }
+abb  { action A2  for pattern P2  }
+a*b+ { action A3  for pattern P3  }
 ```
 
 Note that these three patterns present some conflicts of the type discussed in Section 3.5.3. In particular, string `abb` matches both the second and third patterns, but we shall consider it a lexeme for pattern p~2~ , since that pattern is listed first in the above Lex program. Then, input strings such as `aabbb...` have many prefixes that match the third pattern. The Lex rule is to take the longest, so we continue reading b's, until another a is met, whereupon we report the lexeme to be the initial a's followed by as many b's as there are.
@@ -1089,7 +1089,7 @@ start-->0
 8--b-->8
 ```
 
-Figure 3.52: Combined NFA 
+Figure 3.52: Combined NFA
 
 
 
@@ -1097,7 +1097,7 @@ Figure 3.52: Combined NFA
 
 If the lexical analyzer simulates an NFA such as that of Fig. 3.52, then it must read input beginning at the point on its input which we have referred to as `lexemeBegin`. As it moves the pointer called `forward` ahead in the input, it calculates the set of states it is in at each point, following Algorithm 3.22.
 
-Eventually, the NFA simulation reaches a point on the input where there are no next states. At that point, there is no hope that any longer prefix of the input would ever get the NFA to an accepting state; rather, the set of states will always be empty. Thus, we are ready to decide on the longest prefix that is a lexeme matching some pattern. 
+Eventually, the NFA simulation reaches a point on the input where there are no next states. At that point, there is no hope that any longer prefix of the input would ever get the NFA to an accepting state; rather, the set of states will always be empty. Thus, we are ready to decide on the longest prefix that is a lexeme matching some pattern.
 
 We look backwards in the sequence of sets of states, until we find a set that includes one or more accepting states. If there are several accepting states in that set, pick the one associated with the earliest pattern p~i~ in the list from the Lex program. Move the `forward` pointer back to the end of the lexeme, and perform the action Ai associated with pattern p~i~.
 
@@ -1108,7 +1108,7 @@ We look backwards in the sequence of sets of states, until we find a set that in
                  /a/                /a*b+/
 ```
 
-Figure 3.53: Sequence of sets of states entered when processing input `aaba` 
+Figure 3.53: Sequence of sets of states entered when processing input `aaba`
 
 Thus, we need to back up, looking for a set of states that includes an accepting state. Notice that, as indicated in Fig. 3.53, after reading a we are in a set that includes state 2 and therefore indicates that the pattern a has been matched. However, after reading aab, we are in state 8, which indicates that `a*b+` has been matched; prefix aab is the longest prefix that gets us to an accepting state. We therefore select aab as the lexeme, and execute action A3, which should include a return to the parser indicating that the token whose pattern is `p3 = a*b+` has been found. □
 
@@ -1169,7 +1169,7 @@ If there is only one €-transition state on the imaginary `/` in the NFA, then 
 start->(0)-I->(1)-F->(2)-€->(3)-(->(4)-)->(5)-letter->((6))
 ```
 
-Figure 3.55: NFA recognizing the keyword IF 
+Figure 3.55: NFA recognizing the keyword IF
 
 ---
 
@@ -1177,7 +1177,7 @@ Figure 3.55: NFA recognizing the keyword IF
 
 Technically, the automaton in Fig. 3.54 is not quite a DFA. The reason is that a DFA has a transition from every state on every input symbol in its input alphabet. Here, we have omitted transitions to the dead state Ø, and we have therefore omitted the transitions from the dead state to itself on every input. Previous NFA-to-DFA examples did not have a way to get from the start state to Ø, but the NFA of Fig. 3.52 does.
 
-However, when we construct a DFA for use in a lexical analyzer, it is important that we treat the dead state differently, since we must know when there is no longer any possibility of recognizing a longer lexeme. Thus, we suggest always omitting transitions to the dead state and eliminating the dead state itself. In fact, the problem is harder than it appears, since an NFA-to-DFA construction may yield several states that cannot reach any accepting state, and we must know when any of these states have been reached. Section 3.9.6 discusses how to combine all these states into one dead state, so their identification becomes easy. It is also interesting to note that if we construct a DFA from a regular expression using Algorithms 3.20 and 3.23, then the DFA will not have any states besides Ø that cannot lead to an accepting state. 
+However, when we construct a DFA for use in a lexical analyzer, it is important that we treat the dead state differently, since we must know when there is no longer any possibility of recognizing a longer lexeme. Thus, we suggest always omitting transitions to the dead state and eliminating the dead state itself. In fact, the problem is harder than it appears, since an NFA-to-DFA construction may yield several states that cannot reach any accepting state, and we must know when any of these states have been reached. Section 3.9.6 discusses how to combine all these states into one dead state, so their identification becomes easy. It is also interesting to note that if we construct a DFA from a regular expression using Algorithms 3.20 and 3.23, then the DFA will not have any states besides Ø that cannot lead to an accepting state.
 
 ---
 
@@ -1217,7 +1217,7 @@ In order to understand the algorithm for creating the partition of states that c
 
 We need to prove two things: that states remaining in the same group in ∏~final~ are indistinguishable by any string, and that states winding up in different groups are distinguishable. The first is an induction on i that if after the ith iteration of step (2) of Algorithm 3.39, s and t are in the same group, then there is no string of length i or less that distinguishes them. We shall leave the details of the induction to you.
 
-The second is an induction on i that if states s and t are placed in different groups at the ith iteration of step (2), then there is a string that distinguishes them. The basis, when s and t are placed in different groups of the initial partition, is easy: one must be accepting and the other not, so € distinguishes them. For the induction, there must be an input a and states p and q such that s and t go to states p and q, respectively, on input a. Moreover, p and q must already have been placed in different groups. Then by the inductive hypothesis, there is some string x that distinguishes p from q. Therefore, ax distinguishes s from t. 
+The second is an induction on i that if states s and t are placed in different groups at the ith iteration of step (2), then there is a string that distinguishes them. The basis, when s and t are placed in different groups of the initial partition, is easy: one must be accepting and the other not, so € distinguishes them. For the induction, there must be an input a and states p and q such that s and t go to states p and q, respectively, on input a. Moreover, p and q must already have been placed in different groups. Then by the inductive hypothesis, there is some string x that distinguishes p from q. Therefore, ax distinguishes s from t.
 
 ---
 
@@ -1231,7 +1231,7 @@ Initially, the partition consists of two groups: the accepting states and the no
 
 **INPUT:** A DFA D with set of states S, input alphabet ∑ , state state s_0 , and set of accepting states F.
 
-**OUTPUT:** A DFA D' accepting the same language as D and having as few states as possible. 
+**OUTPUT:** A DFA D' accepting the same language as D and having as few states as possible.
 
 **METHOD:**
 
@@ -1249,16 +1249,16 @@ Initially, the partition consists of two groups: the accepting states and the no
    }
    ```
    Figure 3.64: Construction of ∏~new~
-   
+
 3. If ∏~new~ = ∏ , let ∏~final~ = ∏ and continue with step (4). Otherwise, repeat step (2) with ∏~new~ in place of ∏ .
 
-4. Choose one state in each group of ∏final as the representative for that group. The representatives will be the states of the minimum-state DFA D'. The other components of D' are constructed as follows: 
+4. Choose one state in each group of ∏final as the representative for that group. The representatives will be the states of the minimum-state DFA D'. The other components of D' are constructed as follows:
 
    (a) The start state of D' is the representative of the group containing the start state of D.
 
    (b) The accepting states of D' are the representatives of those groups that contain an accepting state of D. Note that each group contains either only accepting states, or only nonaccepting states, because we started by separating those two classes of states, and the procedure of Fig. 3.64 always forms new groups that are subgroups of previously constructed groups.
 
-   (c) Let `s` be the representative of some group `G` of ∏final, and let the transition of `D` from `s` on input `a` be to state `t`. Let `r` be the representative of `t`'s group `H`. Then in D', there is a transition from `s` to `r` on input `a`. Note that in D, every state in group `G` must go to some state of group `H` on input `a`, or else, group `G` would have been split according to Fig. 3.64. 
+   (c) Let `s` be the representative of some group `G` of ∏final, and let the transition of `D` from `s` on input `a` be to state `t`. Let `r` be the representative of `t`'s group `H`. Then in D', there is a transition from `s` to `r` on input `a`. Note that in D, every state in group `G` must go to some state of group `H` on input `a`, or else, group `G` would have been split according to Fig. 3.64.
 
 □
 
@@ -1311,7 +1311,7 @@ We must split 0137 from 7, because they go to different groups on input `a`. We 
 
 + Lexemes. Each time the lexical analyzer returns a token to the parser, it has an associated lexeme the sequence of input characters that the token represents.
 
-+ 
++
 
 + Patterns. Each token has a pattern that describes which sequences of characters can form the lexemes corresponding to that token. The set of words, or strings of characters, that match a given pattern is called a language.
 
@@ -1333,4 +1333,4 @@ We must split 0137 from 7, because they go to different groups on input `a`. We 
 
 + Lex. There is a family of software systems, including Lex and Flex, that are lexical-analyzer generators. The user specifies the patterns for tokens using an extended regular-expression notation. Lex converts these expressions into a lexical analyzer that is essentially a deterministic finite automaton that recognizes any of the patterns.
 
-+ Minimization of Finite Automata. For every DFA there is a minimum-state DFA accepting the same language. Moreover, the minimum-state DFA for a given language is unique except for the names given to the various states. 
++ Minimization of Finite Automata. For every DFA there is a minimum-state DFA accepting the same language. Moreover, the minimum-state DFA for a given language is unique except for the names given to the various states.
