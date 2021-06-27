@@ -2,7 +2,7 @@
 
 A classic application of symbolic programming is working with algebraic expressions like the kind you find in high school mathematics. In this section you will learn how to do this kind of programming in F#.
 
-Let's take it easy at first and assume you're dealing with simple algebraic expressions that can consist only of numbers, a single variable (it doesn't matter what it is, but let's assume it's $x$), sums, and products. Listing 12-5 shows the implementation of symbolic differentiation over this simple expression type.
+Let's take it easy at first and assume you're dealing with simple algebraic expressions that can consist only of numbers, a single variable (it doesn't matter what it is, but let's assume it's `x`), sums, and products. Listing 12-5 shows the implementation of symbolic differentiation over this simple expression type.
 
 ##### Listing 12-5.  Symbolic differentiation over a simple expression type
 
@@ -23,7 +23,7 @@ let rec deriv expr =
     | Prod (e1, e2) -> Sum (Prod (e1, deriv e2), Prod (e2, deriv e1))
 ```
 
-The type of the deriv function is as follows:
+The type of the `deriv` function is as follows:
 
 ```F#
 val deriv : expr:Expr -> Expr
@@ -98,7 +98,7 @@ let rec simpDeriv e =
                                 simpProd (e2, simpDeriv e1))
 ```
 
-These measures produce a significant improvement over the previous naive approach, but they don't place the result in a normal form, as the following shows:
+These measures produce a significant improvement over the previous naïve approach, but they don't place the result in a normal form, as the following shows:
 
 ```F#
 > simpDeriv e3;;
@@ -113,7 +113,7 @@ This section goes beyond the approach presented so far and shows a richer langua
 
 The main `Expr` type that represents algebraic expressions is contained in `Expr.fs`. Although you can use the expression constructors defined in this type to create expression values on the fly, the most convenient method for embedding complex expressions into this representation is by parsing them. Armed with the ability to encode and parse algebraic expressions, you place the derivation and simplification logic in its own module and file `ExprUtil.fs`. A parser is added in `ExprParser.fsy`, and a tokenizer in `ExprLexer.fsl`. A simple driver added to `Main.fs` completes the application.
 
-Listing 12-7 shows the definition of the abstract syntax representation of expressions using a single `Expr` type. Expressions contain numbers, variables, negation, sums, differences, products, fractions, exponents, basic trigonometric functions ($\sin x$, $\cos x$), and $e^x$.
+Listing 12-7 shows the definition of the abstract syntax representation of expressions using a single `Expr` type. Expressions contain numbers, variables, negation, sums, differences, products, fractions, exponents, basic trigonometric functions (`sin x`, `cos x`), and `e^x`.
 
 Let's look at this abstract syntax design more closely. In Chapter 9, you saw that choosing an abstract syntax often involves design choices, and that these choices often relate to the roles the abstract syntax representation should serve. In this case, you use the abstract syntax to compute symbolic derivatives and simplifications (using techniques similar to those seen earlier in this chapter) and also to graphically visualize the resulting expressions in a way that is pleasant for the human user. For this reason, you don't use an entirely minimalistic abstract syntax (for example, by replacing quotients with an inverse node), because it's helpful to maintain some additional structure in the input.
 

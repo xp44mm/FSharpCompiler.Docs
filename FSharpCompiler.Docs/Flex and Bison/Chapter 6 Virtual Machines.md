@@ -1,6 +1,6 @@
-Chapter 6 Virtual Machines
+# Chapter 6 Virtual Machines
 
-A computer constructed from actual physical devices is termed an actual computer or hardware computer. From the programming point of view, it is the instruction set of the hardware that defines a machine. An operating system is built on top of a machine to manage access to the machine and to provide additional services. The services provided by the operating system constitute another machine, a virtual machine.
+A *computer* constructed from actual physical devices is termed an *actual computer* or *hardware computer*. From the programming point of view, it is the instruction set of the hardware that defines a machine. An operating system is built on top of a machine to manage access to the machine and to provide additional services. The services provided by the operating system constitute another machine, a *virtual machine*.
 
 A programming language provides a set of operations. Thus, for example, it is possible to speak of a Pascal computer or a Scheme computer. For the programmer, the programming language is the computer; the programming language defines a virtual computer. The virtual machine for Simple consists of a data area which contains the association between variables and values and the program which manipulates the data area.
 
@@ -10,17 +10,23 @@ This virtual machine is the run time system of the language. Its complexity may 
 
 User programs constitute another class of virtual machines.
 
-A Stack Machine
+## A Stack Machine
 
-The S-machine 1 is a stack machine organized to simplify the implementation of block structured languages. It provides dynamic storage allocation through a stack of activation records. The activation records are linked to provide support for static scoping and they contain the context information to support procedures.
+The S-machine [^1] is a stack machine organized to simplify the implementation of block structured languages. It provides dynamic storage allocation through a stack of activation records. The activation records are linked to provide support for static scoping and they contain the context information to support procedures.
 
-Machine Organization: The S-machine consists of two stores, a program store, C(organized as an array and is read only), and a data store, S(organized as a stack). There are four registers, an instruction register, IR, which contains the instruction which is being interpreted, the stack top register, T, which contains the address of the top element of the stack, the program address register, PC, which contains the address of the next instruction to be fetched for interpretation, and the current activation record register, AR, which contains the base address of the activation record of the procedure which is being interpreted. Each location of C is capable of holding an instruction. Each location of S is capable of holding an address or an integer. Each instruction consists of three fields, an operation code and two parameters.
+[^ 1]: This is an adaptation of: Niklaus Wirth, Algorithms + Data Structures = Programs Prentice—Hall, Englewood Cliffs, N.J., 1976.
 
-Instruction Set: S-codes are the machine language of the S-machine. S-codes occupy four bytes each. The first byte is the operation code (opcode). There are nine basic S-code instructions, each with a different opcode. The second byte of the S-code instruction contains either 0 or a lexical level offset, or a condition code for the conditional jump instruction. The last two bytes taken as a 16-bit integer form an operand which is a literal value, or a variable offset from a base in the stack, or a S-code instruction location, or an operation number, or a special routine number, depending on the opcode.
+### Machine Organization: 
+
+The S-machine consists of two stores, a program store, C(organized as an array and is read only), and a data store, S(organized as a stack). There are four registers, an instruction register, IR, which contains the instruction which is being interpreted, the stack top register, T, which contains the address of the top element of the stack, the program address register, PC, which contains the address of the next instruction to be fetched for interpretation, and the current activation record register, AR, which contains the base address of the activation record of the procedure which is being interpreted. Each location of C is capable of holding an instruction. Each location of S is capable of holding an address or an integer. Each instruction consists of three fields, an operation code and two parameters.
+
+### Instruction Set: 
+
+S-codes are the machine language of the S-machine. S-codes occupy four bytes each. The first byte is the operation code (opcode). There are nine basic S-code instructions, each with a different opcode. The second byte of the S-code instruction contains either 0 or a lexical level offset, or a condition code for the conditional jump instruction. The last two bytes taken as a 16-bit integer form an operand which is a literal value, or a variable offset from a base in the stack, or a S-code instruction location, or an operation number, or a special routine number, depending on the opcode.
 
 The action of each instruction is described using a mixture of English language description and mathematical formalism. The mathematical formalism is used to note changes in values that occur to the registers and the stack of the S-machine. Data access and storage instructions require an offset within the activation record and the level difference between the referencing level and the definition level. Procedure calls require a code address and the level difference between the referencing level and the definition level.
 
-[^ 1]: This is an adaptation of: Niklaus Wirth, Algorithms + Data Structures = Programs Prentice—Hall, Englewood Cliffs, N.J., 1976.
+
 
 ```
 Instruction Operands Comments
@@ -68,7 +74,9 @@ Where the static level difference between the current procedure and the called p
 f(ld,a) = if i=0 then a else f(i-1,S(a))
 ```
 
-Operation: The registers and the stack of the S-machine are initialized as follows:
+### Operation: 
+
+The registers and the stack of the S-machine are initialized as follows:
 
 ```C
 P = 0. {Program Counter}
@@ -82,14 +90,15 @@ S[2] := 0; {Return Address}
 The machine repeatedly fetches the instruction at the address in the register P, increments the register P and executes the instruction until the register P contains a zero.
 
 ```C
-execution-loop : I:= C(P);
-P:= P+1;
-interpret(I);
-if { P ≤ 0 -> halt
-& P > 0 -> execution-loop }
+execution-loop : 
+    I:= C(P);
+    P:= P+1;
+    interpret(I);
+    if { P ≤ 0 -> halt
+       & P > 0 -> execution-loop }
 ```
 
-The Stack Machine Module
+## The Stack Machine Module
 
 The implementation of the stack machine is straight forward.
 
@@ -97,30 +106,33 @@ The instruction set and the structure of an instruction are defined as follows:
 
 ```C
 /* OPERATIONS: Internal Representation */
-enum code_ops { HALT, STORE, JMP_FALSE, GOTO,
-DATA, LD_INT, LD_VAR,
-READ_INT, WRITE_INT,
-LT, EQ, GT, ADD, SUB, MULT, DIV, PWR };
+enum code_ops { 
+    HALT, STORE, JMP_FALSE, GOTO,
+    DATA, LD_INT, LD_VAR,
+    READ_INT, WRITE_INT,
+    LT, EQ, GT, ADD, SUB, MULT, DIV, PWR };
+
 /* OPERATIONS: External Representation */
-char *op_name[] = {"halt", "store", "jmp_false", "goto",
-"data", "ld_int", "ld_var",
-"in_int", "out_int",
-"lt", "eq", "gt", "add", "sub", "mult", "div", "pwr" };
+char *op_name[] = {
+    "halt", "store", "jmp_false", "goto",
+    "data", "ld_int", "ld_var",
+    "in_int", "out_int",
+    "lt", "eq", "gt", "add", "sub", "mult", "div", "pwr" };
 struct instruction
 {
-enum code_ops op;
-int arg;
+    enum code_ops op;
+    int arg;
 };
 ```
 
-Memory is separtated into two segments, a code segment and a runtime data and expression stack.
+Memory is separated into two segments, a code segment and a runtime data and expression stack.
 
 ```C
 struct instruction code[999];
 int stack[999];
 ```
 
-The definitions of the registers, the program counter pc, the instruction register ir, the activation record pointer ar (which points to be begining of the current activation record), and the pointer to the top of the stack top, are straight forward.
+The definitions of the registers, the program counter `pc`, the instruction register `ir`, the activation record pointer `ar` (which points to be beginning of the current activation record), and the pointer to the top of the stack `top`, are straight forward.
 
 ```C
 int pc = 0;
@@ -133,52 +145,53 @@ The fetch-execute cycle repeats until a halt instruction is encountered.
 
 ```C
 void fetch_execute_cycle()
-{ do { /* Fetch */
-ir = code[pc++];
-/* Execute */
-switch (ir.op) {
+{ 
+    do { /* Fetch */
+         ir = code[pc++];
+         /* Execute */
+         switch (ir.op) {
 case HALT : printf( "halt\n" ); break;
 case READ_INT : printf( "Input: " );
-scanf( "%ld", &stack[ar+ir.arg] ); break;
+                scanf( "%ld", &stack[ar+ir.arg] ); break;
 case WRITE_INT : printf( "Output: %d\n", stack[top--] ); break;
 case STORE : stack[ir.arg] = stack[top--]; break;
 case JMP_FALSE : if ( stack[top--] == 0 )
-pc = ir.arg;
-break;
+                    pc = ir.arg;
+                 break;
 case GOTO : pc = ir.arg; break;
 case DATA : top = top + ir.arg; break;
 case LD_INT : stack[++top] = ir.arg; break;
 case LD_VAR : stack[++top] = stack[ar+ir.arg]; break;
 case LT : if ( stack[top-1] < stack[top] )
-stack[--top] = 1;
-else stack[--top] = 0;
-break;
+             stack[--top] = 1;
+          else stack[--top] = 0;
+          break;
 case EQ : if ( stack[top-1] == stack[top] )
-stack[--top] = 1;
-else stack[--top] = 0;
-break;
+             stack[--top] = 1;
+          else stack[--top] = 0;
+          break;
 case GT : if ( stack[top-1] > stack[top] )
-stack[--top] = 1;
-else stack[--top] = 0;
-top--;
-break;
+             stack[--top] = 1;
+          else stack[--top] = 0;
+          top--;
+          break;
 case ADD : stack[top-1] = stack[top-1] + stack[top];
-top--;
-break;
+           top--;
+           break;
 case SUB : stack[top-1] = stack[top-1] - stack[top];
-top--;
-break;
+           top--;
+           break;
 case MULT : stack[top-1] = stack[top-1] * stack[top];
-top--;
-break;
+            top--;
+            break;
 case DIV : stack[top-1] = stack[top-1] / stack[top];
-top--;
-break;
+           top--;
+           break;
 case PWR : stack[top-1] = stack[top-1] * stack[top];
-top--;
-break;
+           top--;
+           break;
 default : printf( "%sInternal Error: Memory Dump\n" );
-break;
+          break;
 }
 }
 while (ir.op != HALT);

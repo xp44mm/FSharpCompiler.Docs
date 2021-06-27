@@ -2,11 +2,9 @@
 
 As the source program is processed, it is converted to an internal form. The internal representation in the example is that of an implicit parse tree. Other internal forms may be used which resemble assembly code. The internal form is translated by the code generator into object code. Typically, the object code is a program for a virtual machine. The virtual machine chosen for Simple consists of three segments. A data segment, a code segment and an expression stack.
 
-The data segment contains the values associated with the variables. Each variable is assigned to a location which holds the associated value. Thus, part of the activity of code generation is to associate an address with each variable.
+The data segment contains the values associated with the variables. Each variable is assigned to a location which holds the associated value. Thus, part of the activity of code generation is to associate an address with each variable. The code segment consists of a sequence of operations. Program constants are incorporated in the code segment since their values do not change. The expression stack is a stack which is used to hold intermediate values in the evaluation of expressions. The presence of the expression stack indicates that the virtual machine for Simple is a “stack machine”.
 
-The code segment consists of a sequence of operations. Program constants are incorporated in the code segment since their values do not change. The expression stack is a stack which is used to hold intermediate values in the evaluation of expressions. The presence of the expression stack indicates that the virtual machine for Simple is a “stack machine”.
-
-Declaration translation
+## Declaration translation
 
 Declarations define an environment. To reserve space for the data values, the DATA instruction is used.
 
@@ -14,53 +12,58 @@ Declarations define an environment. To reserve space for the data values, the DA
 integer x,y,z. DATA 2
 ```
 
-Statement translation
+## Statement translation
 
 The assignment, if, while, read and write statements are translated as follows:
 
 ```
-x := expr code for expr
-STORE X
+x := expr    code for expr
+             STORE X
+             
 if cond then code for cond
-S1 BR_FALSE L1
-else code for S1
-S2 BR L2
-end L1: code for S2
-L2:
+   S1        BR_FALSE L1
+else         code for S1
+   S2        BR L2
+end          L1: code for S2
+             L2:
+             
 while cond do L1: code for cond
-S BR_FALSE L2
-end code for S
-BR L1
-L2:
-read X IN_INT X
-write expr code for expr
-OUT_INT
+    S             BR_FALSE L2
+end               code for S
+                  BR L1
+               L2:
+               
+read X         IN_INT X
+write expr     code for expr
+               OUT_INT
 ```
 
-If the code is placed in an array, then the label addresses must be back-patched into the code when they become available.
+If the code is placed in an array, then the label addresses must be *back-patched* into the code when they become available.
 
-Expression translation
+## Expression translation
 
 Expressions are evaluated on an expression stack. Expressions are translated as follows:
 
 ```C
-constant LD_INT constant
-variable LD variable
-e1 op e2 code for e1
-code for e2
-code for op
+constant        LD_INT constant
+    
+variable        LD variable
+    
+e1 op e2        code for e1
+                code for e2
+                code for op
 ```
 
-The Code Generator Module
+## The Code Generator Module
 
-The data segment begins with an offset of zero and space is reserved, in the data segment, by calling the function data location which returns the address of the reserved location.
+The data segment begins with an offset of zero and space is reserved, in the data segment, by calling the function `data_location` which returns the address of the reserved location.
 
 ```C
 int data_offset = 0;
 int data_location() { return data_offset++; }
 ```
 
-The code segment begins with an offset of zero. Space is reserved, in the code segment, by calling the function reserve loc which returns the address of the reserved location. The function gen label returns the value of the code offset.
+The code segment begins with an offset of zero. Space is reserved, in the code segment, by calling the function `reserve_loc` which returns the address of the reserved location. The function `gen_label` returns the value of the code offset.
 
 ```C
 int code_offset = 0;
@@ -74,51 +77,54 @@ return code_offset;
 }
 ```
 
-The functions reserve loc and gen label are used for backpatching code.
+The functions `reserve_loc` and `gen_label` are used for backpatching code.
 
-The functions gen code and back patch are used to generate code. gen code generates code at the current offset while back patch is used to generate code at some previously reserved address.
+The functions `gen_code` and `back_patch` are used to generate code. `gen_code` generates code at the current offset while `back_patch` is used to generate code at some previously reserved address.
 
 ```C
 void gen_code( enum code_ops operation, int arg )
 { code[code_offset].op = operation;
-code[code_offset++].arg = arg;
+  code[code_offset++].arg = arg;
 }
 void back_patch( int addr, enum code_ops operation, int arg )
 {
-code[addr].op = operation;
-code[addr].arg = arg;
+    code[addr].op = operation;
+    code[addr].arg = arg;
 }
 ```
 
-The Symbol Table Modifications
+## The Symbol Table Modifications
 
-The symbol table record is extended to contain the offset from the base address of the data segment (the storage area which is to contain the values associated with each variable) and the putsym function is extended to place the offset into the record associated with the variable.
+The symbol table record is extended to contain the offset from the base address of the data segment (the storage area which is to contain the values associated with each variable) and the `putsym` function is extended to place the offset into the record associated with the variable.
 
 ```C
 struct symrec
 {
-char *name; /* name of symbol */
-int offset; /* data offset */
-struct symrec *next; /* link field */
+  char *name; /* name of symbol */
+  int offset; /* data offset */
+  struct symrec *next; /* link field */
 };
-...
+//...
 symrec * putsym (char *sym_name)
 {
-symrec *ptr;
-ptr = (symrec *) malloc (sizeof(symrec));
-ptr->name = (char *) malloc (strlen(sym_name)+1);
-strcpy (ptr->name,sym_name);
-ptr->offset = data_location();
-ptr->next = (struct symrec *)sym_table;
-sym_table = ptr;
-return ptr;
+  symrec *ptr;
+  ptr = (symrec *) malloc (sizeof(symrec));
+    
+  ptr->name = (char *) malloc (strlen(sym_name)+1);
+  strcpy (ptr->name,sym_name);
+    
+  ptr->offset = data_location();
+    
+  ptr->next = (struct symrec *)sym_table;
+  sym_table = ptr;
+  return ptr;
 }
-...
+//...
 ```
 
-The Parser Modifications
+## The Parser Modifications
 
-As an example of code generation, we extend our Lex and Yacc files for Simple to generate code for a stack machine. First, we must extend the Yacc and Lex files to pass the values of constants from the scanner to the parser. The definition of the semantic record in the Yacc file is modified that the constant may be returned as part of the semantic record. and to hold two label identifiers since two labels will be required for the if and while commands. The token type of IF and WHILE is <lbls> to provide label storage for backpatching. The function newlblrec generates the space to hold the labels used in generating code for the If and While statements. The context check routine is extended to generate code.
+As an example of code generation, we extend our Lex and Yacc files for Simple to generate code for a stack machine. First, we must extend the Yacc and Lex files to pass the values of constants from the scanner to the parser. The definition of the semantic record in the Yacc file is modified that the constant may be returned as part of the semantic record. and to hold two label identifiers since two labels will be required for the `if` and `while` commands. The token type of `IF` and `WHILE` is `<lbls>` to provide label storage for backpatching. The function `newlblrec` generates the space to hold the labels used in generating code for the If and While statements. The `context_check` routine is extended to generate code.
 
 ```C
 %{#include <stdio.h> /* For I/O */
@@ -181,7 +187,7 @@ struct lbs *lbls /* For backpatching */
 /* C subroutines */
 ```
 
-The parser is extended to generate and assembly code. The code implementing the if and while commands must contain the correct jump addresses. In this example, the jump destinations are labels. Since the destinations are not known until the entire command is processed, back-patching of the destination information is required. In this example, the label identifier is generated when it is known that an address is required. The label is placed into the code when its position is known. An alternative solution is to store the code in an array and back-patch actual addresses.
+The parser is extended to generate and assembly code. The code implementing the `if` and `while` commands must contain the correct jump addresses. In this example, the jump destinations are labels. Since the destinations are not known until the entire command is processed, *back-patching* of the destination information is required. In this example, the label identifier is generated when it is known that an address is required. The label is placed into the code when its position is known. An alternative solution is to store the code in an array and back-patch actual addresses.
 
 The actions associated with code generation for a stack-machine based architecture are added to the grammar section. The code generated for the declaration section must reserve space for the variables.
 
@@ -189,18 +195,22 @@ The actions associated with code generation for a stack-machine based architectu
 /* C and Parser declarations */
 %%
 program : LET
-declarations
-IN { gen_code( DATA, sym_table->offset ); }
-commands
-END { gen_code( HALT, 0 ); YYACCEPT; }
+             declarations
+          IN { gen_code( DATA, sym_table->offset ); }
+             commands
+          END { gen_code( HALT, 0 ); YYACCEPT; }
 ;
 declarations : /* empty */
-| INTEGER id_seq IDENTIFIER ’.’ { install( $3 ); }
+    | INTEGER id_seq IDENTIFIER ’.’ { install( $3 ); }
 ;
 id_seq : /* empty */
-| id_seq IDENTIFIER ’,’ { install( $2 ); }
+    | id_seq IDENTIFIER ’,’ { install( $2 ); }
 ;
-The IF and WHILE commands require backpatching.
+```
+
+The `IF` and `WHILE` commands require backpatching.
+
+```C
 commands : /* empty */
 | commands command ’;’
 ;
@@ -226,7 +236,11 @@ back_patch( $1->for_jmp_false,
 JMP_FALSE,
 gen_label() ); }
 ;
+```
+
 The code generated for expressions is straight forward.
+
+```C
 exp : NUMBER { gen_code( LD_INT, $1 ); }
 | IDENTIFIER { context_check( LD_VAR, $1 ); }
 | exp ’<’ exp { gen_code( LT, 0 ); }
@@ -243,7 +257,7 @@ exp : NUMBER { gen_code( LD_INT, $1 ); }
 /* C subroutines */
 ```
 
-The Scanner Modifications
+## The Scanner Modifications
 
 Then the Lex file is extended to place the value of the constant into the semantic record.
 
@@ -259,13 +273,17 @@ ID [a-z][a-z0-9]*
 return(INT); }
 ...
 {ID} { yylval.id = (char *) strdup(yytext);
-return(IDENT); }
+       return(IDENT); }
 [ \t\n]+ /* eat up whitespace */
-. { return(yytext[0]);}
+.    { return(yytext[0]);}
 %%
-An Example
-To illustrate the code generation capabilities of the compiler, Figure 7.1 is a
-program in Simp and Figure 7.2.
+```
+
+## An Example
+
+To illustrate the code generation capabilities of the compiler, Figure 7.1 is a program in **Simple** and Figure 7.2.
+
+```F#
 let
 integer n,x,n.
 in

@@ -2,9 +2,9 @@
 
 Lex and Yacc files can be extended to handle the context sensitive information. For example, suppose we want to require that, in Simple, we require that variables be declared before they are referenced. Therefore the parser must be able to compare variable references with the variable declarations.
 
-One way to accomplish this is to construct a list of the variables during the parse of the declaration section and then check variable references against the those on the list. Such a list is called a symbol table. Symbol tables may be implemented using lists, trees, and hash-tables.
+One way to accomplish this is to construct a list of the variables during the parse of the declaration section and then check variable references against the those on the list. Such a list is called a *symbol table*. Symbol tables may be implemented using lists, trees, and hash-tables.
 
-We modify the Lex file to assign the global variable yylval to the identifier string since the information will be needed by the attribute grammar.
+We modify the Lex file to assign the global variable `yylval` to the identifier string since the information will be needed by the attribute grammar.
 
 ## The Symbol Table Module
 
@@ -14,44 +14,44 @@ The symbol table will be developed as a module to be included in the yacc/bison 
 
 The symbol table for Simple consists of a linked list of identifiers, initially empty. Here is the declaration of a node, initialization of the list to empty and
 
-```
+```C
 struct symrec
 {
 char *name; /* name of symbol */
 struct symrec *next; /* link field */
 };
 typedef struct symrec symrec;
-symrec *sym table = (symrec *)0;
+symrec *sym_table = (symrec *)0;
 symrec *putsym ();
 symrec *getsym ();
 ```
 
 and two operations: `putsym` to put an identifier into the table,
 
-```
+```C
 symrec *
-putsym ( char *sym name )
+putsym ( char *sym_name )
 {
 symrec *ptr;
 ptr = (symrec *) malloc (sizeof(symrec));
-ptr− >name = (char *) malloc (strlen(sym name)+1);
-strcpy (ptr− >name,sym name);
-ptr− >next = (struct symrec *)sym table;
-sym table = ptr;
+ptr -> name = (char *) malloc (strlen(sym_name)+1);
+strcpy (ptr -> name,sym_name);
+ptr -> next = (struct symrec *)sym_table;
+sym_table = ptr;
 return ptr;
 }
 ```
 
 and `getsym` which returns a pointer to the symbol table entry corresponding to an identifier.
 
-```
+```C
 symrec *
-getsym ( char *sym name )
+getsym ( char *sym_name )
 {
 symrec *ptr;
-for (ptr = sym table; ptr != (symrec *) 0;
-ptr = (symrec *)ptr− >next)
-if (strcmp (ptr− >name,sym name) == 0)
+for (ptr = sym_table; ptr != (symrec *) 0;
+ptr = (symrec *)ptr -> next)
+if (strcmp (ptr->name,sym_name) == 0)
 return ptr;
 return 0;
 }
@@ -62,25 +62,25 @@ return 0;
 
 The Yacc/Bison file is modified to include the symbol table and with routines to perform the installation of an identifier in the symbol table and to perform context checking.
 
-```
+```C
 %{
 #include <stdlib.h> /* For malloc in symbol table */
 #include <string.h> /* For strcmp in symbol table */
 #include <stdio.h> /* For error messages */
-#include ”ST.h” /* The Symbol Table Module */
+#include "ST.h" /* The Symbol Table Module */
 #define YYDEBUG 1 /* For debugging */
-install ( char *sym name )
+install ( char *sym_name )
 { symrec *s;
-s = getsym (sym name);
+s = getsym (sym_name);
 if (s == 0)
-s = putsym (sym name);
+s = putsym (sym_name);
 else { errors++;
-printf( ”%s is already defined\n”, sym name );
+printf( "%s is already defined\n", sym_name );
 }
 }
-context check( char *sym name )
-{ if ( getsym( sym name ) == 0 )
-printf( ”%s is an undeclared identifier\n”, sym name );
+context_check( char *sym_name )
+{ if ( getsym( sym_name ) == 0 )
+printf( "%s is an undeclared identifier\n", sym_name );
 }
 %}
 Parser declarations
@@ -90,18 +90,18 @@ Grammar rules and actions
 C subroutines
 ```
 
-Since the scanner (the Lex file) will be returning identifiers, a semantic record (static semantics) is required to hold the value and IDENT is associated with that semantic record.
+Since the scanner (the Lex file) will be returning identifiers, a semantic record (static semantics) is required to hold the value and `IDENT` is associated with that semantic record.
 
-```
+```c
 C declarations
 %union { /* SEMANTIC RECORD */
 char *id; /* For returning identifiers */
 }
 %token INT SKIP IF THEN ELSE FI WHILE DO END
 %token <id> IDENT /* Simple identifier */
-%left ’-’ ’+’
-%left ’*’ ’/’
-%right ’ˆ’
+%left '-' '+'
+%left '*' '/'
+%right '^'
 %%
 Grammar rules and actions
 %%
@@ -110,22 +110,22 @@ C subroutines
 
 The context free-grammar is modified to include calls to the install and context checking functions. `$n` is a variable internal to Yacc which refers to the semantic record corresponding the the nth symbol on the right hand side of a production.
 
-```
+```c
 C and parser declarations
 %%
 ...
 declarations : /* empty */
-| INTEGER id seq IDENTIFIER ’.’ { install( $3 ); }
+| INTEGER id_seq IDENTIFIER '.' { install( $3 ); }
 ;
-id seq : /* empty */
-| id seq IDENTIFIER ’,’ { install( $2 ); }
+id_seq : /* empty */
+| id_seq IDENTIFIER ',' { install( $2 ); }
 ;
 command : SKIP
-| READ IDENTIFIER { context check( $2 ); }
-| IDENT ASSGNOP exp { context check( $2 ); }
+| READ IDENTIFIER { context_check( $2 ); }
+| IDENT ASSGNOP exp { context_check( $2 ); }
 ...
 exp : INT
-| IDENT { context check( $2 ); }
+| IDENT { context_check( $2 ); }
 ...
 %%
 C subroutines
@@ -135,16 +135,16 @@ In this implementation the parse tree is implicitly annotated with the informati
 
 ## The Scanner Modifications
 
-The scanner must be modified to return the literal string associated each identifier (the semantic value of the token). The semantic value is returned in the global variable yylval. yylval’s type is a union made from the %union declaration in the parser file. The semantic value must be stored in the proper member of the union. Since the union declaration is:
+The scanner must be modified to return the literal string associated each identifier (the semantic value of the token). The semantic value is returned in the global variable `yylval`. `yylval`’s type is a union made from the `%union` declaration in the parser file. The semantic value must be stored in the proper member of the union. Since the union declaration is:
 
-```
+```C
 %union { char *id;
 }
 ```
 
-the semantic value is copied from the global variable yytext (which contains the input text) to yylval.id. Since the function strdup is used (from the library string.h) the library must be included. The resulting scanner file is:
+the semantic value is copied from the global variable `yytext` (which contains the input text) to `yylval.id`. Since the function `strdup` is used (from the library `string.h`) the library must be included. The resulting scanner file is:
 
-```
+```C
 %{
 #include <string.h> /* for strdup */
 #include "Simple.tab.h" /* for token definitions and yylval */
@@ -168,7 +168,7 @@ then { return(THEN); }
 while { return(WHILE); }
 write { return(WRITE); }
 {ID} { yylval.id = (char *) strdup(yytext);
-return(IDENTIFIER);}
+       return(IDENTIFIER);}
 [ \t\n]+ /* eat up whitespace */
 . { return(yytext[0]);}
 %%

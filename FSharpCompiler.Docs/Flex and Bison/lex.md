@@ -19,12 +19,12 @@ Here’s another simple example:
 int num_lines = 0, num_chars = 0;
 %%
 \n ++num_lines; ++num_chars;
-. ++num_chars;
+.  ++num_chars;
 %%
 main()
 {
-yylex();
-printf( "# of lines = %d, # of chars = %d\n", num_lines, num_chars );
+    yylex();
+    printf( "# of lines = %d, # of chars = %d\n", num_lines, num_chars );
 }
 ```
 
@@ -41,17 +41,16 @@ A somewhat more complicated example:
 #include <math.h>
 %}
 DIGIT [0-9]
-ID [a-z][a-z0-9]*
+ID    [a-z][a-z0-9]*
 %%
 {DIGIT}+ {
-printf( "An integer: %s (%d)\n", yytext, atoi( yytext ) );
+    printf( "An integer: %s (%d)\n", yytext, atoi( yytext ) );
 }
 {DIGIT}+"."{DIGIT}* {
-printf( "A float: %s (%g)\n", yytext,
-atof( yytext ) );
+    printf( "A float: %s (%g)\n", yytext, atof( yytext ) );
 }
 if|then|begin|end|procedure|function {
-printf( "A keyword: %s\n", yytext );
+    printf( "A keyword: %s\n", yytext );
 }
 {ID} printf( "An identifier: %s\n", yytext );
 "+"|"-"|"*"|"/" printf( "An operator: %s\n", yytext );
@@ -63,12 +62,12 @@ main( argc, argv )
 int argc;
 char **argv;
 {
-++argv, --argc; /* skip over program name */
-if ( argc > 0 )
-    yyin = fopen( argv[0], "r" );
-else
-    yyin = stdin;
-yylex();
+    ++argv, --argc; /* skip over program name */
+    if ( argc > 0 )
+        yyin = fopen( argv[0], "r" );
+    else
+        yyin = stdin;
+    yylex();
 }
 ```
 
@@ -98,22 +97,22 @@ Name definitions have the form:
 name definition
 ```
 
-The “`name`” is a word beginning with a letter or an underscore (‘\_’) followed by zero or more letters, digits, ‘\_’, or ‘-’ (dash). The definition is taken to begin at the first non-white-space character following the name and continuing to the end of the line. The definition can subsequently be referred to using “name”, which will expand to “(definition)”. For example,
+The “`name`” is a word beginning with a letter or an underscore (‘`\_`’) followed by zero or more letters, digits, ‘`\_`’, or ‘-’ (dash). The definition is taken to begin at the first non-white-space character following the name and continuing to the end of the line. The definition can subsequently be referred to using “name”, which will expand to “`(definition)`”. For example,
 
-```
+```js
 DIGIT [0-9]
-ID [a-z][a-z0-9]*
+ID    [a-z][a-z0-9]*
 ```
 
-defines “DIGIT” to be a regular expression which matches a single digit, and “ID” to be a regular expression which matches a letter followed by zero-or-more letters-or-digits. A subsequent reference to
+defines “`DIGIT`” to be a regular expression which matches a single digit, and “`ID`” to be a regular expression which matches a letter followed by zero-or-more letters-or-digits. A subsequent reference to
 
-```
+```C
 {DIGIT}+"."{DIGIT}*
 ```
 
 is identical to
 
-```
+```C
 ([0-9])+"."([0-9])*
 ```
 
@@ -141,6 +140,7 @@ In the definitions section, an unindented comment (i.e., a line beginning with �
 
 The patterns in the input are written using an extended set of regular expressions. These are:
 
+```js
 `x` 
 
 match the character ‘x’
@@ -232,6 +232,7 @@ an r, but only at the beginning of a line
 `r$` 
 
 an r, but only at the end of a line. Equivalent to “`r/\n`”.
+```
 
 The regular expressions listed above are grouped according to precedence, from highest precedence at the top to lowest at the bottom. Those grouped together have equal precedence. For example,
 
@@ -337,7 +338,6 @@ One of the main uses of Lex/Flex is as a companion to the Yacc/Bison parser-gene
 %%
 [0-9]+ yylval = atoi( yytext ); return TOK_NUMBER;
 ```
-
 
 
 

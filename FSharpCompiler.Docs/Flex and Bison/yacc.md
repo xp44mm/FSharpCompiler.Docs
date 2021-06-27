@@ -10,11 +10,11 @@ A formal grammar selects tokens only by their classifications: for example, if a
 
 But the precise value is very important for what the input means once it is parsed. A compiler is useless if it fails to distinguish between 4, 1 and 3989 as constants in the program! Therefore, each token has both a token type and a **semantic value**.
 
-The token type is a terminal symbol defined in the grammar, such as INTEGER, IDENTIFIER or ','. It tells everything you need to know to decide where the token may validly appear and how to group it with other tokens. The grammar rules know nothing about tokens except their types.
+The token type is a terminal symbol defined in the grammar, such as `INTEGER`, `IDENTIFIER` or `','`. It tells everything you need to know to decide where the token may validly appear and how to group it with other tokens. The grammar rules know nothing about tokens except their types.
 
-The semantic value has all the rest of the information about the meaning of the token, such as the value of an integer, or the name of an identifier. (A token such as ',' which is just punctuation doesn’t need to have any semantic value.)
+The semantic value has all the rest of the information about the meaning of the token, such as the value of an integer, or the name of an identifier. (A token such as `','` which is just punctuation doesn’t need to have any semantic value.)
 
-For example, an input token might be classified as token type INTEGER and have the semantic value 4. Another input token might have the same token type INTEGER but value 3989. When a grammar rule says that INTEGER is allowed, either of these tokens is acceptable because each is an INTEGER. When the parser accepts the token, it keeps track of the token’s semantic value.
+For example, an input token might be classified as token type `INTEGER` and have the semantic value 4. Another input token might have the same token type `INTEGER` but value 3989. When a grammar rule says that `INTEGER` is allowed, either of these tokens is acceptable because each is an `INTEGER`. When the parser accepts the token, it keeps track of the token’s semantic value.
 
 Each grouping can also have a semantic value as well as its nonterminal symbol. For example, in a calculator, an expression typically has a semantic value that is a number. In a compiler for a programming language, an expression typically has a semantic value that is a tree structure describing the meaning of the expression.
 
@@ -38,64 +38,68 @@ There is one other alternative: the table can say that the look-ahead token is e
 
 The following is a Yacc/Bison input file which defines a reverse Polish notation calculator. The file created by Yacc/Bison simulates the calculator. The details of the example are explained in later sections.
 
-```c
+```livescript
 /* Reverse Polish notation calculator. */
 %{
 #define YYSTYPE double
 #include <math.h>
 %}
 %token NUM
+
 %% /* Grammar rules and actions follow */
 input : /* empty */
-| input line
-;
+    | input line
+    ;
 line : '\n'
-| exp '\n' { printf ("\t%.10g\n", $1); }
-;
+    | exp '\n' { printf ("\t%.10g\n", $1); }
+    ;
 exp : NUM { $$ = $1; }
-| exp exp '+' { $$ = $1 + $2; }
-| exp exp '-' { $$ = $1 - $2; }
-| exp exp '*' { $$ = $1 * $2; }
-| exp exp '/' { $$ = $1 / $2; }
-/* Exponentiation */
-| exp exp '^' { $$ = pow ($1, $2); }
-/* Unary minus */
-| exp 'n' { $$ = -$1; }
-;
+    | exp exp '+' { $$ = $1 + $2; }
+    | exp exp '-' { $$ = $1 - $2; }
+    | exp exp '*' { $$ = $1 * $2; }
+    | exp exp '/' { $$ = $1 / $2; }
+    /* Exponentiation */
+    | exp exp '^' { $$ = pow ($1, $2); }
+    /* Unary minus */
+    | exp 'n' { $$ = -$1; }
+    ;
 
 %%
 /* Lexical analyzer returns a double floating point
-number on the stack and the token NUM, or the ASCII
-character read if not a number. Skips all blanks
-and tabs, returns 0 for EOF. */
+   number on the stack and the token NUM, or the ASCII
+   character read if not a number. Skips all blanks
+   and tabs, returns 0 for EOF. */
 #include <ctype.h>
 yylex ()
-{ int c;
-/* skip white space */
-while ((c = getchar ()) == ' ' || c == '\t')
-;
-/* process numbers */
-if (c == '.' || isdigit (c))
+{ 
+    int c;
+    /* skip white space */
+    while ((c = getchar ()) == ' ' || c == '\t')
+    ;
+    /* process numbers */
+    if (c == '.' || isdigit (c))
+    {
+        ungetc (c, stdin);
+        scanf ("%lf", &yylval);
+        return NUM;
+    }
+    /* return end-of-file */
+    if (c == EOF)
+        return 0;
+    /* return single chars */
+    return c;
+}
+
+main () /* The `Main` function to make this stand-alone */
 {
-ungetc (c, stdin);
-scanf ("%lf", &yylval);
-return NUM;
+    yyparse ();
 }
-/* return end-of-file */
-if (c == EOF)
-return 0;
-/* return single chars */
-return c;
-}
-main () /* The ‘‘Main’’ function to make this stand-alone */
-{
-yyparse ();
-}
+
 #include <stdio.h>
 yyerror (s) /* Called by yyparse on error */
 char *s;
 {
-printf ("%s\n", s);
+    printf ("%s\n", s);
 }
 ```
 
@@ -105,7 +109,7 @@ Yacc/Bison takes as input a context-free grammar specification and produces a C-
 
 A Yacc/Bison grammar file has four main sections, shown here with the appropriate delimiters:
 
-```
+```livescript
 %{
 C declarations
 %}
@@ -140,23 +144,23 @@ Definitions are provided for the terminal and nonterminal symbols, to specify th
 
 The first rule in the file also specifies the start symbol, by default. If you want some other symbol to be the start symbol, you must declare it explicitly. Symbol names can contain letters, digits (not at the beginning), underscores and periods. Periods make sense only in nonterminals.
 
-A **terminal symbol** (also known as a **token type**) represents a class of syntactically equivalent tokens. You use the symbol in grammar rules to mean that a token in that class is allowed. The symbol is represented in the Yacc/Bison parser by a numeric code, and the `yylex` function returns a token type code to indicate what kind of token has been read. You don’t need to know what the code value is; you can use the symbol to stand for it. By convention, it should be all upper case. All token type names (but not single-character literal tokens such as '+' and '*') must be declared.
+A **terminal symbol** (also known as a **token type**) represents a class of syntactically equivalent tokens. You use the symbol in grammar rules to mean that a token in that class is allowed. The symbol is represented in the Yacc/Bison parser by a numeric code, and the `yylex` function returns a token type code to indicate what kind of token has been read. You don’t need to know what the code value is; you can use the symbol to stand for it. By convention, it should be all upper case. All token type names (but not single-character literal tokens such as `'+'` and `'*'`) must be declared.
 
 There are two ways of writing terminal symbols in the grammar:
 
-• A **named token type** is written with an identifier, it should be all upper case such as, INTEGER, IDENTIFIER, IF or RETURN. A terminal symbol that stands for a particular keyword in the language should be named after that keyword converted to upper case. Each such name must be defined with a Yacc/Bison declaration such as
+- A **named token type** is written with an identifier, it should be all upper case such as, `INTEGER`, `IDENTIFIER`, `IF` or `RETURN`. A terminal symbol that stands for a particular keyword in the language should be named after that keyword converted to upper case. Each such name must be defined with a Yacc/Bison declaration such as
 
-```
-%token INTEGER IDENTIFIER
-```
+  ```livescript
+  %token INTEGER IDENTIFIER
+  ```
 
-The terminal symbol `error` is reserved for error recovery. In particular, `yylex` should never return this value.
+  The terminal symbol `error` is reserved for error recovery. In particular, `yylex` should never return this value.
 
-• A **character token type** (or **literal token**) is written in the grammar using the same syntax used in C for character constants; for example, '+' is a character token type. A character token type doesn’t need to be declared unless you need to specify its semantic value data type, associativity, or precedence.
+- A **character token type** (or **literal token**) is written in the grammar using the same syntax used in C for character constants; for example, `'+'` is a character token type. A character token type doesn’t need to be declared unless you need to specify its semantic value data type, associativity, or precedence.
 
-By convention, a character token type is used only to represent a token that consists of that particular character. Thus, the token type '+' is used to represent the character + as a token. Nothing enforces this convention, but if you depart from it, your program will confuse other readers.
+  By convention, a character token type is used only to represent a token that consists of that particular character. Thus, the token type `'+'` is used to represent the character `+` as a token. Nothing enforces this convention, but if you depart from it, your program will confuse other readers.
 
-All the usual escape sequences used in character literals in C can be used in Yacc/Bison as well, but you must not use the null character as a character literal because its ASCII code, zero, is the code `yylex` returns for end-of-input.
+  All the usual escape sequences used in character literals in C can be used in Yacc/Bison as well, but you must not use the null character as a character literal because its ASCII code, zero, is the code `yylex` returns for end-of-input.
 
 How you choose to write a terminal symbol has no effect on its grammatical meaning. That depends only on where it appears in rules and on when the parser function returns that symbol.
 
@@ -170,7 +174,7 @@ A **nonterminal symbol** stands for a class of syntactically equivalent grouping
 
 The basic way to declare a token type name (terminal symbol) is as follows:
 
-```
+```livescript
 %token name
 ```
 
@@ -180,7 +184,7 @@ Alternatively you can use `%left`, `%right`, or `%nonassoc` instead of `%token`,
 
 You can explicitly specify the numeric code for a token type by appending an integer value in the field immediately following the token name:
 
-```
+```livescript
 %token NUM 300
 ```
 
@@ -188,44 +192,44 @@ It is generally best, however, to let Yacc/Bison choose the numeric codes for al
 
 In the event that the stack type is a union, you must augment the `%token` or other token declaration to include the data type alternative delimited by angle-brackets. For example:
 
-```C
+```livescript
 %union {/* define stack type */
-double val;
-symrec *tptr;
+        double val;
+        symrec *tptr;
 }
 %token <val> NUM /* define token NUM and its type */
 ```
 
 #### Operator Precedence
 
-Use the `%left`, `%right` or `%nonassoc` declaration to declare a token and specify its precedence and associativity, all at once. These are called precedence declarations.
+Use the `%left`, `%right` or `%nonassoc` declaration to declare a token and specify its precedence and associativity, all at once. These are called **precedence declarations**.
 
 The syntax of a precedence declaration is the same as that of `%token`: either
 
-```C
+```livescript
 %left symbols. . .
 ```
 
 or
 
-```c
+```livescript
 %left <type> symbols. . .
 ```
 
 And indeed any of these declarations serves the purposes of `%token`. But in addition, they specify the associativity and relative precedence for all the symbols:
 
-• The associativity of an operator `op` determines how repeated uses of the operator nest: whether `x op y op z` is parsed by grouping x with y first or by grouping y with z first. `%left` specifies left-associativity (grouping x with y first) and `%right` specifies right-associativity (grouping y with z first). `%nonassoc` specifies no associativity, which means that `x op y op z` is considered a syntax error.
+- The associativity of an operator `op` determines how repeated uses of the operator nest: whether `x op y op z` is parsed by grouping `x` with `y` first or by grouping `y` with `z` first. `%left` specifies left-associativity (grouping `x` with `y` first) and `%right` specifies right-associativity (grouping `y` with `z` first). `%nonassoc` specifies no associativity, which means that `x op y op z` is considered a syntax error.
 
-• The precedence of an operator determines how it nests with other operators. All the tokens declared in a single precedence declaration have equal precedence and nest together according to their associativity. When two tokens declared in different precedence declarations associate, the one declared later has the higher precedence and is grouped first.
+- The precedence of an operator determines how it nests with other operators. All the tokens declared in a single precedence declaration have equal precedence and nest together according to their associativity. When two tokens declared in different precedence declarations associate, the one declared later has the higher precedence and is grouped first.
 
 #### The Collection of Value Types
 
 The `%union` declaration specifies the entire collection of possible data types for semantic values. The keyword `%union` is followed by a pair of braces containing the same thing that goes inside a union in C. For example:
 
-```C
+```livescript
 %union {
-double val;
-symrec *tptr;
+    double val;
+    symrec *tptr;
 }
 ```
 
@@ -247,9 +251,9 @@ Here is a summary of all Yacc/Bison declarations:
 
 `%nonassoc` Declare a terminal symbol (token type name) that is nonassociative (using it in a way that would be associative is a syntax error).
 
-`%type <non-terminal>` Declare the type of semantic values for a nonterminal symbol. When you use `%union` to specify multiple value types, you must declare the value type of each nonterminal symbol for which values are used. This is done with a `%type` declaration. Here nonterminal is the name of a nonterminal symbol, and type is the name given in the `%union` to the alternative that you want. You can give any number of nonterminal symbols in the same `%type` declaration, if they have the same value type. Use spaces to separate the symbol names.
+`%type <nonterminal>` Declare the type of semantic values for a nonterminal symbol. When you use `%union` to specify multiple value types, you must declare the value type of each nonterminal symbol for which values are used. This is done with a `%type` declaration. Here `nonterminal` is the name of a nonterminal symbol, and type is the name given in the `%union` to the alternative that you want. You can give any number of nonterminal symbols in the same `%type` declaration, if they have the same value type. Use spaces to separate the symbol names.
 
-`%start <non-terminal>` Specify the grammar’s start symbol. Yacc/Bison assumes by default that the start symbol for the grammar is the first nonterminal specified in the grammar specification section. The programmer may override this restriction with the `%start` declaration.
+`%start <nonterminal>` Specify the grammar’s start symbol. Yacc/Bison assumes by default that the start symbol for the grammar is the first nonterminal specified in the grammar specification section. The programmer may override this restriction with the `%start` declaration.
 
 ### C.3.2 The Grammar Rules Section
 
@@ -275,7 +279,7 @@ Whitespace in rules is significant only to separate symbols. You can add extra w
 
 Scattered among the components can be actions that determine the semantics of the rule. An action looks like this:
 
-```
+```C
 {C statements}
 ```
 
@@ -283,7 +287,7 @@ Usually there is only one action and it follows the components.
 
 Multiple rules for the same result can be written separately or can be joined with the vertical-bar character `|` as follows:
 
-```
+```livescript
 result : rule1-components. . .
 | rule2-components. . .
 . . .
@@ -372,9 +376,9 @@ In most programs, you will need different data types for different kinds of toke
 
 To use more than one data type for semantic values in one parser, Yacc/Bison requires you to do two things:
 
-• Specify the entire collection of possible data types, with the `%union` Yacc/Bison declaration.
+- Specify the entire collection of possible data types, with the `%union` Yacc/Bison declaration.
 
-• Choose one of those types for each symbol (terminal or nonterminal) for which semantic values are used. This is done for tokens with the `%token` Yacc/Bison declaration and for groupings with the `%type` Yacc/Bison declaration.
+- Choose one of those types for each symbol (terminal or nonterminal) for which semantic values are used. This is done for tokens with the `%token` Yacc/Bison declaration and for groupings with the `%type` Yacc/Bison declaration.
 
 An action accompanies a syntactic rule and contains C code to be executed each time an instance of that rule is recognized. The task of most actions is to compute a semantic value for the grouping built by the rule from the semantic values associated with tokens or smaller groupings.
 
@@ -394,7 +398,7 @@ This rule constructs an `exp` from two smaller `exp` groupings connected by a pl
 
 `$n` with n zero or negative is allowed for reference to tokens and groupings on the stack before those that match the current rule. This is a very risky practice, and to use it reliably you must be certain of the context in which the rule is applied. Here is a case in which you can use this reliably:
 
-```
+```livescript
 foo : expr bar '+' expr { . . . }
 | expr bar '-' expr { . . . }
 ;
@@ -411,10 +415,9 @@ If you have chosen a single data type for semantic values, the `$$` and `$n` con
 
 If you have used `%union` to specify a variety of data types, then you must declare a choice among these types for each terminal or nonterminal symbol that can have a semantic value. Then each time you use `$$` or `$n`, its data type is determined by which symbol it refers to in the rule. In this example
 
-```
+```livescript
 exp : . . .
-| exp '+' exp
-{ $$ = $1 + $3; }
+| exp '+' expn { $$ = $1 + $3; }
 ```
 
 `$1` and `$3` refer to instances of `exp`, so they all have the data type declared for the nonterminal symbol `exp`. If `$2` were used, it would have the data type declared for the terminal symbol ’`+`’, whatever that might be.
@@ -422,10 +425,10 @@ exp : . . .
 
 Alternatively, you can specify the data type when you refer to the value, by inserting `<type>` after the `$` at the beginning of the reference. For example, if you have defined types as shown here:
 
-```c
+```livescript
 %union {
-int itype;
-double dtype;
+    int itype;
+    double dtype;
 }
 ```
 
@@ -794,11 +797,11 @@ Once you have compiled the program with trace facilities, the way to request a t
 
 Each step taken by the parser when `yydebug` is nonzero produces a line or two of trace information, written on `stderr`. The trace messages tell you these things:
 
-• Each time the parser calls `yylex`, what kind of token was read.
+- Each time the parser calls `yylex`, what kind of token was read.
 
-• Each time a token is shifted, the depth and complete contents of the state stack.
+- Each time a token is shifted, the depth and complete contents of the state stack.
 
-• Each time a rule is reduced, which rule it is, and the complete contents of the state stack afterward.
+- Each time a rule is reduced, which rule it is, and the complete contents of the state stack afterward.
 
 To make sense of this information, it helps to refer to the listing file produced by the Yacc/Bison `-v` option. This file shows the meaning of each state in terms of positions in various rules, and also what each state will do with each possible input token. As you read the successive trace messages, you can see that the parser is functioning according to its specification in the listing file. Eventually you will arrive at the place where something undesirable happens, and you will see which parts of the grammar are to blame.
 
