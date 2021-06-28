@@ -263,19 +263,21 @@ There must always be at least one grammar rule, and the first `%%` (which preced
 
 A Yacc/Bison grammar rule has the following general form:
 
-```
+```livescript
 result : components. . . ;
 ```
 
-where `result` is the nonterminal symbol that this rule describes and `components` are various terminal and nonterminal symbols that are put together by this rule. For example,
+where **result** is the nonterminal symbol that this rule describes and **components** are various terminal and nonterminal symbols that are put together by this rule. For example,
 
-```
+```livescript
 exp : exp '+' exp ;
 ```
 
 says that two groupings of type `exp`, with a `+` token in between, can be combined into a larger grouping of type `exp`.
 
 Whitespace in rules is significant only to separate symbols. You can add extra whitespace as you wish.
+
+
 
 Scattered among the components can be actions that determine the semantics of the rule. An action looks like this:
 
@@ -285,12 +287,14 @@ Scattered among the components can be actions that determine the semantics of th
 
 Usually there is only one action and it follows the components.
 
+
+
 Multiple rules for the same result can be written separately or can be joined with the vertical-bar character `|` as follows:
 
 ```livescript
 result : rule1-components. . .
-| rule2-components. . .
-. . .
+       | rule2-components. . .
+       . . .
 ;
 ```
 
@@ -298,42 +302,45 @@ They are still considered distinct rules even when joined in this way.
 
 If components in a rule is empty, it means that result can match the empty string. For example, here is how to define a comma-separated sequence of zero or more `exp` groupings:
 
-```C
+```livescript
 expseq : /* empty */
-| expseq1
+       | expseq1
 ;
 expseq1 : exp
-| expseq1 ',' exp
+        | expseq1 ',' exp
 ;
 ```
 
 It is customary to write a comment `/* empty */` in each rule with no components.
 
+
+
 A rule is called recursive when its result nonterminal appears also on its right hand side. Nearly all Yacc/Bison grammars need to use recursion, because that is the only way to define a sequence of any number of somethings. Consider this recursive definition of a comma-separated sequence of one or more expressions:
 
-```
+```livescript
 expseq1 : exp
-| expseq1 ',' exp
+        | expseq1 ',' exp
 ;
 ```
 
-Since the recursive use of `expseq1` is the leftmost symbol in the right hand side, we call this **left recursion**. By contrast, here the same construct is defined using right recursion:
+Since the recursive use of `expseq1` is the leftmost symbol in the right hand side, we call this **left recursion**. By contrast, here the same construct is defined using **right recursion**:
 
-```
+```livescript
 expseq1 : exp
-| exp ',' expseq1 ;
+        | exp ',' expseq1 
+;
 ```
 
 Any kind of sequence can be defined using either left recursion or right recursion, but you should always use **left recursion**, because it can parse a sequence of any number of elements with bounded stack space. Right recursion uses up space on the Yacc/Bison stack in proportion to the number of elements in the sequence, because all the elements must be shifted onto the stack before the rule can be applied even once.
 
 Indirect or mutual recursion occurs when the result of the rule does not appear directly on its right hand side, but does appear in rules for other nonterminals which do appear on its right hand side. For example:
 
-```
+```livescript
 expr : primary
-| primary '+' primary
+     | primary '+' primary
 ;
 primary : constant
-| '(' expr ')'
+        | '(' expr ')'
 ;
 ```
 
@@ -347,7 +354,7 @@ Most of the time, the purpose of an action is to compute the semantic value of t
 
 For example, here is a rule that says an expression can be the sum of two subexpressions:
 
-```C
+```livescript
 expr : expr '+' expr { $$ = $1 + $3; }
 ;
 ```
@@ -382,32 +389,36 @@ To use more than one data type for semantic values in one parser, Yacc/Bison req
 
 An action accompanies a syntactic rule and contains C code to be executed each time an instance of that rule is recognized. The task of most actions is to compute a semantic value for the grouping built by the rule from the semantic values associated with tokens or smaller groupings.
 
+
+
 An action consists of C statements surrounded by braces, much like a compound statement in C. It can be placed at any position in the rule; it is executed at that position. Most rules have just one action at the end of the rule, following all the components. Actions in the middle of a rule are tricky and used only for special purposes.
 
 The C code in an action can refer to the semantic values of the components matched by the rule with the construct `$n`, which stands for the value of the **nth** component. The semantic value for the grouping being constructed is `$$`. (Yacc/Bison translates both of these constructs into array element references when it copies the actions into the parser file.)
 
 Here is a typical example:
 
-```
+```livescript
 exp : . . .
-| exp '+' exp
-{ $$ = $1 + $3; }
+    | exp '+' exp 
+    { $$ = $1 + $3; }
 ```
 
 This rule constructs an `exp` from two smaller `exp` groupings connected by a plus-sign token. In the action, `$1` and `$3` refer to the semantic values of the two component `exp` groupings, which are the first and third symbols on the right hand side of the rule. The sum is stored into `$$` so that it becomes the semantic value of the addition-expression just recognized by the rule. If there were a useful semantic value associated with the `+` token, it could be referred to as `$2`.
 
-`$n` with n zero or negative is allowed for reference to tokens and groupings on the stack before those that match the current rule. This is a very risky practice, and to use it reliably you must be certain of the context in which the rule is applied. Here is a case in which you can use this reliably:
+
+
+`$n` with `n` zero or negative is allowed for reference to tokens and groupings on the stack before those that match the current rule. This is a very risky practice, and to use it reliably you must be certain of the context in which the rule is applied. Here is a case in which you can use this reliably:
 
 ```livescript
 foo : expr bar '+' expr { . . . }
-| expr bar '-' expr { . . . }
+    | expr bar '-' expr { . . . }
 ;
 bar : /* empty */
-{ previous expr = $0; }
+    { previous_expr = $0; }
 ;
 ```
 
-As long as bar is used only in the fashion shown here, `$0` always refers to the `expr` which precedes bar in the definition of foo.
+As long as `bar` is used only in the fashion shown here, `$0` always refers to the `expr` which precedes `bar` in the definition of `foo`.
 
 #### Data Types of Values in Actions
 
@@ -417,7 +428,7 @@ If you have used `%union` to specify a variety of data types, then you must decl
 
 ```livescript
 exp : . . .
-| exp '+' expn { $$ = $1 + $3; }
+    | exp '+' exp { $$ = $1 + $3; }
 ```
 
 `$1` and `$3` refer to instances of `exp`, so they all have the data type declared for the nonterminal symbol `exp`. If `$2` were used, it would have the data type declared for the terminal symbol ’`+`’, whatever that might be.
@@ -446,32 +457,32 @@ The mid-rule action can also have a semantic value. This can be set within that 
 
 Here is an example from a hypothetical compiler, handling a `let` statement that looks like `let (variable) statement` and serves to create a variable named variable temporarily for the duration of statement. To parse this construct, we must put variable into the symbol table while statement is parsed, then remove it afterward. Here is how it is done:
 
-```C
+```livescript
 stmt : LET '(' var ')'
-{ $<context>$ = push context ();
-  declare variable ($3); }
-stmt { $$ = $6;
-       pop context ($<context>5); }
+           { $<context>$ = push_context ();
+           declare_variable ($3); }
+       stmt { $$ = $6;
+              pop_context ($<context>5); }
 ```
 
-As soon as `let (variable)` has been recognized, the first action is run. It saves a copy of the current semantic context (the list of accessible variables) as its semantic value, using alternative context in the data-type union. Then it calls declare variable to add the new variable to that list. Once the first action is finished, the embedded statement `stmt` can be parsed. Note that the mid-rule action is component number 5, so the `stmt` is component number 6.
+As soon as `let (variable)` has been recognized, the first action is run. It saves a copy of the current semantic context (the list of accessible variables) as its semantic value, using alternative `context` in the data-type union. Then it calls `declare_variable` to add the new variable to that list. Once the first action is finished, the embedded statement `stmt` can be parsed. Note that the mid-rule action is component number 5, so the `stmt` is component number 6.
 
 After the embedded statement is parsed, its semantic value becomes the value of the entire let-statement. Then the semantic value from the earlier action is used to restore the prior list of variables. This removes the temporary let-variable from the list so that it won’t appear to exist while the rest of the program is parsed.
 
 Taking action before a rule is completely recognized often leads to conflicts since the parser must commit to a parse in order to execute the action. For example, the following two rules, without mid-rule actions, can coexist in a working parser because the parser can shift the open-brace token and look at what follows before deciding whether there is a declaration or not:
 
-```
+```livescript
 compound : '{' declarations statements '}'
-| '{' statements '}'
+         | '{' statements '}'
 ;
 ```
 
 But when we add a mid-rule action as follows, the rules become nonfunctional:
 
-```
-compound : { prepare for local variables (); }
-'{' declarations statements '}'
-| '{' statements '}'
+```livescript
+compound : { prepare_for_local_variables (); }
+           '{' declarations statements '}'
+         | '{' statements '}'
 ;
 ```
 
@@ -479,20 +490,22 @@ Now the parser is forced to decide whether to run the mid-rule action when it ha
 
 You might think that you could correct the problem by putting identical actions into the two rules, like this:
 
-```
-compound : { prepare for local variables (); }
-'{' declarations statements '}'
-| { prepare for local variables (); }
-'{' statements '}'
+```livescript
+compound : { prepare_for_local_variables (); }
+           '{' declarations statements '}'
+         | { prepare_for_local_variables (); }
+           '{' statements '}'
 ;
 ```
 
-But this does not help, because Yacc/Bison does not realize that the two actions are identical. (Yacc/Bison never tries to understand the C code in an action.) If the grammar is such that a declaration can be distinguished from a statement by the first token (which is true in C), then one solution which does work is to put the action after the open-brace, like this:
+But this does not help, because Yacc/Bison does not realize that the two actions are identical. (Yacc/Bison never tries to understand the C code in an action.) 
 
-```
-compound : '{' { prepare for local variables (); }
-declarations statements '}'
-| '{' statements '}'
+If the grammar is such that a declaration can be distinguished from a statement by the first token (which is true in C), then one solution which does work is to put the action after the open-brace, like this:
+
+```livescript
+compound : '{' { prepare_for_local_variables (); }
+           declarations statements '}'
+         | '{' statements '}'
 ;
 ```
 
@@ -500,14 +513,14 @@ Now the first token of the following declaration or statement, which would in an
 
 Another solution is to bury the action inside a nonterminal symbol which serves as a subroutine:
 
-```
+```livescript
 subroutine : /* empty */
-{ prepare for local variables (); }
+    { prepare_for_local_variables (); }
 ;
 compound : subroutine
-'{' declarations statements '}'
-| subroutine
-'{' statements '}'
+           '{' declarations statements '}'
+         | subroutine
+           '{' statements '}'
 ;
 ```
 
@@ -551,9 +564,10 @@ The value is 1 if parsing failed (return is due to a syntax error).
 
 In an action, you can cause immediate return from `yyparse` by using these macros:
 
-`YYACCEPT` Return immediately with value 0 (to report success).
-
-`YYABORT` Return immediately with value 1 (to report failure).
+```
+YYACCEPT Return immediately with value 0 (to report success).
+YYABORT Return immediately with value 1 (to report failure).
+```
 
 ### The Lexical Analyzer Function yylex
 
@@ -603,9 +617,9 @@ When you are using multiple data types, `yylval`’s type is a union made from t
 
 ```c
 %union {
-int intval;
-double val;
-symrec *tptr;
+    int intval;
+    double val;
+    symrec *tptr;
 }
 ```
 
@@ -620,13 +634,13 @@ return INT; /* Return the type of the token. */
 
 ### Textual Positions of Tokens
 
-If you are using the @n-feature in actions to keep track of the textual locations of tokens and groupings, then you must provide this information in `yylex`. The function `yyparse` expects to find the textual location of a token just parsed in the global variable `yylloc`. So `yylex` must store the proper data in that variable. The value of `yylloc` is a structure and you need only initialize the members that are going to be used by the actions. The four members are called first line, first column, last line and last column. Note that the use of this feature makes the parser noticeably slower.
+If you are using the @n-feature in actions to keep track of the textual locations of tokens and groupings, then you must provide this information in `yylex`. The function `yyparse` expects to find the textual location of a token just parsed in the global variable `yylloc`. So `yylex` must store the proper data in that variable. The value of `yylloc` is a structure and you need only initialize the members that are going to be used by the actions. The four members are called `first_line`, `first_column`, `last_line` and `last_column`. Note that the use of this feature makes the parser noticeably slower.
 
 The data type of `yylloc` has the name `YYLTYPE`.
 
 ### The Error Reporting Function yyerror
 
-The Yacc/Bison parser detects a parse error or syntax error whenever it reads a token which cannot satisfy any syntax rule. A action in the grammar can also explicitly proclaim an error, using the macro `YYERROR`.
+The Yacc/Bison parser detects a *parse error* or *syntax error* whenever it reads a token which cannot satisfy any syntax rule. A action in the grammar can also explicitly proclaim an error, using the macro `YYERROR`.
 
 The Yacc/Bison parser expects to report the error by calling an error reporting function named `yyerror`, which you must supply. It is called by `yyparse` whenever a syntax error is found, and it receives one argument. For a parse error, the string is always "parse error".
 
@@ -649,18 +663,18 @@ After `yyerror` returns to `yyparse`, the latter will attempt error recovery if 
 Suppose we are parsing a language which has if-then and if-then-else statements, with a pair of rules like this:
 
 ```c
-if stmt : IF expr THEN stmt
-| IF expr THEN stmt ELSE stmt
+if_stmt : IF expr THEN stmt
+        | IF expr THEN stmt ELSE stmt
 ;
 ```
 
-(Here we assume that IF, THEN and ELSE are terminal symbols for specific keyword tokens.)
+(Here we assume that `IF`, `THEN` and `ELSE` are terminal symbols for specific keyword tokens.)
 
-When the ELSE token is read and becomes the look-ahead token, the contents of the stack (assuming the input is valid) are just right for reduction by the first rule. But it is also legitimate to shift the ELSE, because that would lead to eventual reduction by the second rule.
+When the `ELSE` token is read and becomes the look-ahead token, the contents of the stack (assuming the input is valid) are just right for reduction by the first rule. But it is also legitimate to shift the `ELSE`, because that would lead to eventual reduction by the second rule.
 
-This situation, where either a shift or a reduction would be valid, is called a shift/reduce conflict. Yacc/Bison is designed to resolve these conflicts by choosing to shift, unless otherwise directed by operator precedence declarations. To see the reason for this, let’s contrast it with the other alternative.
+This situation, where either a shift or a reduction would be valid, is called a *shift/reduce conflict*. Yacc/Bison is designed to resolve these conflicts by choosing to shift, unless otherwise directed by operator precedence declarations. To see the reason for this, let’s contrast it with the other alternative.
 
-Since the parser prefers to shift the ELSE, the result is to attach the else-clause to the innermost if-statement, making these two inputs equivalent:
+Since the parser prefers to shift the `ELSE`, the result is to attach the else-clause to the innermost if-statement, making these two inputs equivalent:
 
 ```F#
 if x then if y then win(); else lose;
@@ -677,10 +691,10 @@ Consider the following ambiguous grammar fragment (ambiguous because the input `
 
 ```c
 expr : expr '-' expr
-| expr '*' expr
-| expr '<' expr
-| '(' expr ')'
-. . .
+     | expr '*' expr
+     | expr '<' expr
+     | '(' expr ')'
+     . . .
 ;
 ```
 
@@ -698,7 +712,7 @@ The relative precedence of different operators is controlled by the order in whi
 
 In our example, we would want the following declarations:
 
-```C
+```livescript
 %left '<'
 %left '-'
 %left '*'
@@ -706,7 +720,7 @@ In our example, we would want the following declarations:
 
 In a more complete example, which supports other operators as well, we would declare them in groups of equal precedence. For example, ’`+`’ is declared with ’`-`’:
 
-```C
+```livescript
 %left '<' '>' '=' NE LE GE
 %left '+' '-'
 %left '*' '/'
@@ -720,7 +734,7 @@ The Yacc/Bison precedence declarations, `%left`, `%right` and `%nonassoc`, can o
 
 The `%prec` modifier declares the precedence of a particular rule by specifying a terminal symbol whose precedence should be used for that rule. It’s not necessary for that symbol to appear otherwise in the rule. The modifier’s syntax is:
 
-```
+```livescript
 %prec terminal-symbol
 ```
 
@@ -728,7 +742,7 @@ and it is written after the components of the rule. Its effect is to assign the 
 
 Here is how `%prec` solves the problem of unary minus. First, declare a precedence for a fictitious terminal symbol named UMINUS. There are no tokens of this type, but the symbol serves to stand for its precedence:
 
-```C
+```livescript
 . . .
 %left '+' '-'
 %left '*'
