@@ -718,7 +718,7 @@ In our example, we would want the following declarations:
 %left '*'
 ```
 
-In a more complete example, which supports other operators as well, we would declare them in groups of equal precedence. For example, ’`+`’ is declared with ’`-`’:
+In a more complete example, which supports other operators as well, we would declare them in groups of equal precedence. For example, `'+'` is declared with `'-'`:
 
 ```livescript
 %left '<' '>' '=' NE LE GE
@@ -738,9 +738,9 @@ The `%prec` modifier declares the precedence of a particular rule by specifying 
 %prec terminal-symbol
 ```
 
-and it is written after the components of the rule. Its effect is to assign the rule the precedence of terminal-symbol, overriding the precedence that would be deduced for it in the ordinary way. The altered rule precedence then affects how conflicts involving that rule are resolved.
+and it is written after the components of the rule. Its effect is to assign the rule the precedence of `terminal-symbol`, overriding the precedence that would be deduced for it in the ordinary way. The altered rule precedence then affects how conflicts involving that rule are resolved.
 
-Here is how `%prec` solves the problem of unary minus. First, declare a precedence for a fictitious terminal symbol named UMINUS. There are no tokens of this type, but the symbol serves to stand for its precedence:
+Here is how `%prec` solves the problem of unary minus. First, declare a precedence for a fictitious terminal symbol named `UMINUS`. There are no tokens of this type, but the symbol serves to stand for its precedence:
 
 ```livescript
 . . .
@@ -751,11 +751,11 @@ Here is how `%prec` solves the problem of unary minus. First, declare a preceden
 
 Now the precedence of `UMINUS` can be used in specific rules:
 
-```c
+```livescript
 exp : . . .
-| exp '-' exp
-. . .
-| '-' exp %prec UMINUS
+    | exp '-' exp
+    . . .
+    | '-' exp %prec UMINUS
 ```
 
 ### Reduce/Reduce Conflicts
@@ -770,9 +770,9 @@ You can define how to recover from a syntax error by writing rules to recognize 
 
 ```c
 stmnts : /* empty string */
-| stmnts '\'
-| stmnts exp '\'
-| stmnts error '\'
+       | stmnts '\'
+       | stmnts exp '\'
+       | stmnts error '\'
 ```
 
 
@@ -792,8 +792,8 @@ It is also useful to recover to the matching close-delimiter of an opening-delim
 
 ```C
 primary : '(' expr ')'
-| '(' error ')'
-. . .
+        | '(' error ')'
+        . . .
 ;
 ```
 
@@ -835,11 +835,11 @@ To turn this source code as written into a runnable program, you must follow the
 
 1. Run Yacc/Bison on the grammar to produce the parser. The usual way to invoke Yacc/Bison is as follows:
 
-```
-bison infile
-```
-
-Here `infile` is the grammar file name, which usually ends in `.y`. The parser file’s name is made by replacing the `.y` with `.tab.c`. Thus, the bison `foo.y` filename yields `foo.tab.c`.
+   ```
+   bison infile
+   ```
+  
+   Here `infile` is the grammar file name, which usually ends in `.y`. The parser file’s name is made by replacing the `.y` with `.tab.c`. Thus, the bison `foo.y` filename yields `foo.tab.c`.
 
 2. Compile the code output by Yacc/Bison, as well as any other source files.
 
