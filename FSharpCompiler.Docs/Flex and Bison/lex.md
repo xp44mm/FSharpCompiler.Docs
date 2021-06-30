@@ -4,14 +4,14 @@ In order for Lex/Flex to recognize patterns in text, the pattern must be describ
 
 ## B.1 Lex/Flex Examples
 
-The following Lex/Flex input specifies a scanner which whenever it encounters the string “username” will replace it with the user’s login name:
+The following Lex/Flex input specifies a scanner which whenever it encounters the string `“username”` will replace it with the user’s login name:
 
 ```C
 %%
 username printf( "%s", getlogin());
 ```
 
-By default, any text not matched by a Lex/Flex scanner is copied to the output, so the net effect of this scanner is to copy its input file to its output with each occurrence of “username” expanded. In this input, there is just one rule. “username” is the **pattern** and the “`printf`” is the **action**. The “`%%`” marks the beginning of the rules.
+By default, any text not matched by a Lex/Flex scanner is copied to the output, so the net effect of this scanner is to copy its input file to its output with each occurrence of `“username”` expanded. In this input, there is just one rule. `“username”` is the **pattern** and the “`printf`” is the **action**. The “`%%`” marks the beginning of the rules.
 
 Here’s another simple example:
 
@@ -30,7 +30,7 @@ main()
 
 This scanner counts the number of characters and the number of lines in its input (it produces no output other than the final report on the counts). The first line declares two globals, `num_lines` and `num_chars`, which are accessible both inside `yylex()` and in the `main()` routine declared after the second ”`%%`”.
 
-There are two rules, one which matches a newline (“`\n`”) and increments both the line count and the character count, and one which matches any character other than a newline (indicated by the “`.`” regular expression).
+There are two rules, one which matches a newline (`“\n”`) and increments both the line count and the character count, and one which matches any character other than a newline (indicated by the “`.`” regular expression).
 
 A somewhat more complicated example:
 
@@ -52,11 +52,11 @@ ID    [a-z][a-z0-9]*
 if|then|begin|end|procedure|function {
     printf( "A keyword: %s\n", yytext );
 }
-{ID} printf( "An identifier: %s\n", yytext );
-"+"|"-"|"*"|"/" printf( "An operator: %s\n", yytext );
+{ID}                 printf( "An identifier: %s\n", yytext );
+"+"|"-"|"*"|"/"      printf( "An operator: %s\n", yytext );
 "{"[\^{$\;$}}\n]*"}" /* eat up one-line comments */
-[ \t\n]+ /* eat up whitespace */
-. printf( "Unrecognized character: %s\n", yytext );
+[ \t\n]+             /* eat up whitespace */
+.                    printf( "Unrecognized character: %s\n", yytext );
 %%
 main( argc, argv )
 int argc;
@@ -79,7 +79,7 @@ The details of this example will be explained in the following sections.
 
 The Lex/Flex input file consists of three sections, separated by a line with just `%%` in it:
 
-```
+```livescript
 definitions
 %%
 rules
@@ -97,7 +97,7 @@ Name definitions have the form:
 name definition
 ```
 
-The “`name`” is a word beginning with a letter or an underscore (‘`\_`’) followed by zero or more letters, digits, ‘`\_`’, or ‘-’ (dash). The definition is taken to begin at the first non-white-space character following the name and continuing to the end of the line. The definition can subsequently be referred to using “name”, which will expand to “`(definition)`”. For example,
+The “`name`” is a word beginning with a letter or an underscore (‘`_`’) followed by zero or more letters, digits, underscore, or dash(‘-’). The definition is taken to begin at the first non-white-space character following the name and continuing to the end of the line. The definition can subsequently be referred to using `{name}`, which will expand to “`(definition)`”. For example,
 
 ```js
 DIGIT [0-9]
@@ -116,7 +116,7 @@ is identical to
 ([0-9])+"."([0-9])*
 ```
 
-and matches one-or-more digits followed by a ‘`.`’ followed by zero-or-more digits.
+and matches one-or-more digits followed by a `‘.’` followed by zero-or-more digits.
 
 ### B.2.2 The Rules Section
 
@@ -130,7 +130,9 @@ where the pattern must be unindented and the action must begin on the same line.
 
 See below for a further description of patterns and actions.
 
-Finally, the user code section is simply copied to `lex.yy.c` verbatim. It is used for companion routines which call or are called by the scanner. The presence of this section is optional; if it is missing, the second may be skipped, too. In the definitions and rules sections, any indented text or text enclosed in `%{` and `%}` is copied verbatim to the output (with the `%{}`’s removed). The `%{}`’s must appear unindented on lines by themselves.
+Finally, the user code section is simply copied to `lex.yy.c` verbatim. It is used for companion routines which call or are called by the scanner. The presence of this section is optional; if it is missing, the second `%%` may be skipped, too. 
+
+In the definitions and rules sections, any indented text or text enclosed in `%{` and `%}` is copied verbatim to the output (with the `%{}`’s removed). The `%{}`’s must appear unindented on lines by themselves.
 
 In the rules section, any indented or `%{}` text appearing before the first rule may be used to declare variables which are local to the scanning routine and (after the declarations) code which is to be executed whenever the scanning routine is entered. Other indented or `%{}` text in the rule section is still copied to the output, but its meaning is not well-defined and it may well cause compile-time errors.
 
@@ -223,7 +225,7 @@ either an r or an s
 
 `r/s` 
 
-an r but only if it is followed by an s. The s is not part of the matched text. This type of pattern is called as **“trailing context”**.
+an r but only if it is followed by an s. The s is not part of the matched text. This type of pattern is called as “trailing context”.
 
 `^r` 
 
@@ -231,7 +233,7 @@ an r, but only at the beginning of a line
 
 `r$` 
 
-an r, but only at the end of a line. Equivalent to “`r/\n`”.
+an r, but only at the end of a line. Equivalent to “r/\n”.
 ```
 
 The regular expressions listed above are grouped according to precedence, from highest precedence at the top to lowest at the bottom. Those grouped together have equal precedence. For example,
@@ -246,19 +248,19 @@ is the same as
 (foo)|(ba(r*))
 ```
 
-since the ‘`*`’ operator has higher precedence than concatenation, and concatenation higher than alternation (‘`|`’). This pattern therefore matches either the string “foo” or the string “ba” followed by zero-or-more r’s. To match “foo” or zero-or-more “bar”’s, use:
+since the ‘`*`’ operator has higher precedence than concatenation, and concatenation higher than alternation (‘`|`’). This pattern therefore matches either the string `“foo”` or the string `“ba”` followed by zero-or-more r’s. To match `“foo”` or zero-or-more `“bar”`’s, use:
 
 ```c
 foo|(bar)*
 ```
 
-and to match zero-or-more “foo”’s-or-“bar”’s:
+and to match zero-or-more `“foo”`’s-or-`“bar”`’s:
 
 ```
 (foo|bar)*
 ```
 
-A note on patterns: A negated character class such as the example “`[^A-Z]`” above will match a newline unless “`\n`” (or an equivalent escape sequence) is one of the characters explicitly present in the negated character class (e.g., “`[^A−Z\n]`”). This is unlike how many other regular expression tools treat negated character classes, but unfortunately the inconsistency is historically entrenched. Matching newlines means that a pattern like [ˆ "]* can match an entire input (overflowing the scanner’s input buffer) unless there’s another quote in the input.
+A note on patterns: A negated character class such as the example “`[^A-Z]`” above will match a newline unless “`\n`” (or an equivalent escape sequence) is one of the characters explicitly present in the negated character class (e.g., “`[^A−Z\n]`”). This is unlike how many other regular expression tools treat negated character classes, but unfortunately the inconsistency is historically entrenched. Matching newlines means that a pattern like `[ˆ "]*` can match an entire input (overflowing the scanner’s input buffer) unless there’s another quote in the input.
 
 #### How the Input is Matched
 
@@ -268,7 +270,7 @@ Once the match is determined, the text corresponding to the match (called the to
 
 If no match is found, then the default rule is executed: the next character in the input is considered matched and copied to the standard output. Thus, the simplest legal Lex/Flex input is:
 
-```
+```livescript
 %%
 ```
 
@@ -276,9 +278,9 @@ which generates a scanner that simply copies its input (one character at a time)
 
 #### Lex/Flex Actions
 
-Each pattern in a rule has a corresponding action, which can be any arbitrary C statement. The pattern ends at the first non-escaped whitespace character; the remainder of the line is its action. If the action is empty, then when the pattern is matched the input token is simply discarded. For example, here is the specification for a program which deletes all occurrences of “zap me” from its input:
+Each pattern in a rule has a corresponding action, which can be any arbitrary C statement. The pattern ends at the first non-escaped whitespace character; the remainder of the line is its action. If the action is empty, then when the pattern is matched the input token is simply discarded. For example, here is the specification for a program which deletes all occurrences of `“zap me”` from its input:
 
-```c
+```livescript
 %%
 "zap me"
 ```
@@ -287,7 +289,7 @@ Each pattern in a rule has a corresponding action, which can be any arbitrary C 
 
 Here is a program which compresses multiple blanks and tabs down to a single blank, and throws away whitespace found at the end of a line:
 
-```c
+```livescript
 %%
 [ \t]+ putchar( ' ' );
 [ \t]+$ /* ignore this token */
@@ -318,7 +320,7 @@ int yylex()
 
 For example, you could use:
 
-```c
+```Cs
 #undef YY_DECL
 #define YY_DECL float lexscan( a, b ) float a, b;
 ```
@@ -331,7 +333,7 @@ Whenever `yylex()` is called, it scans tokens from the global input file `yyin` 
 
 One of the main uses of Lex/Flex is as a companion to the Yacc/Bison parser-generator. Yacc/Bison parsers expect to call a routine named `yylex()` to find the next input token. The routine is supposed to return the type of the next token as well as putting any associated value in the global `yylval`. To use Lex/Flex with Yacc/Bison, one specifies the `-d` option to Yacc/Bison to instruct it to generate the file `y.tab.h` containing definitions of all the `%tokens` appearing in the Yacc/Bison input. This file is then included in the Lex/Flex scanner. For example, if one of the tokens is “`TOK_NUMBER`”, part of the scanner might look like:
 
-```c
+```cs
 %{
 #include "y.tab.h"
 %}

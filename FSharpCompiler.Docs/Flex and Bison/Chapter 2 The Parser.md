@@ -4,7 +4,7 @@ A parser is a program which determines if its input is syntactically valid and d
 
 Yacc is a program which given a context-free grammar, constructs a C program which will parse input according to the grammar rules. Yacc was developed by S. C. Johnson an others at AT&T Bell Laboratories. Yacc provides for semantic stack manipulation and the specification of semantic routines. A input file for Yacc is of the form:
 
-```
+```livescript
 C and parser declarations
 %%
 Grammar rules and actions
@@ -14,7 +14,7 @@ C subroutines
 
 The first section of the Yacc file consists of a list of tokens (other than single characters) that are expected by the parser and the specification of the start symbol of the grammar. This section of the Yacc file may contain specification of the precedence and associativity of operators. This permits greater flexibility in the choice of a context-free grammar. Addition and subtraction are declared to be left associative and of lowest precedence while exponentiation is declared to be right associative and to have the highest precedence.
 
-```js
+```livescript
 %start program
 %token LET INTEGER IN
 %token SKIP IF THEN ELSE END WHILE DO READ WRITE
@@ -31,7 +31,7 @@ C subroutines
 
 The second section of the Yacc file consists of the context-free grammar for the language. Productions are separated by semicolons, the `::=` symbol of the BNF is replaced with `:`, the empty production is left empty, non-terminals are written in all lower case, and the multicharacter terminal symbols in all upper case. Notice the simplification of the expression grammar due to the separation of precedence from the grammar.
 
-```js
+```livescript
 C and parser declarations
 %%
 program : LET declarations IN commands END ;
@@ -91,6 +91,8 @@ yyerror (char *s) /* Called by yyparse on error */
 ```
 
 The parser, as written, has no output however, the parse tree is implicitly constructed during the parse. As the parser executes, it builds an internal representation of the the structure of the program. The internal representation is based on the right hand side of the production rules. When a right hand side is recognized, it is reduced to the corresponding left hand side. Parsing is complete when the entire program has been reduced to the start symbol of the grammar.
+
+
 
 Compiling the Yacc file with the command `yacc -vd file.y` (`bison -vd file.y`) causes the generation of two files `file.tab.h` and `file.tab.c`. The `file.tab.h` contains the list of tokens is included in the file which defines the scanner. The file `file.tab.c` defines the C function `yyparse()` which is the parser.
 

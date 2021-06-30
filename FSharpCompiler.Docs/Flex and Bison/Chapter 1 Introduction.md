@@ -28,15 +28,15 @@ There are several other types of translators that are often used in conjunction 
 
 For illustration purposes, we will construct a compiler for a simple imperative programming language called `Simple`. The context-free grammar for Simple is given in Figure 1.1 where the non-terminal symbols are given in all lower case, the terminal symbols are given in all caps or as literal symbols and, where the literal symbols conflict with the meta symbols of the EBNF, they are enclosed with single quotes. The start symbol is `program`. While the grammar uses upper-case to high-light terminal symbols, they are to be implemented in lower case.
 
-```
+```livescript
 program          ::= LET [ declarations ] IN command sequence END
 declarations     ::= INTEGER [ id_seq ] IDENTIFIER .
 id_seq           ::= id_seq... IDENTIFIER ,
-command sequence ::= command... command
+command_sequence ::= command... command
 command ::= SKIP ;
           | IDENTIFIER := expression ;
-          | IF exp THEN command sequence ELSE command sequence FI ;
-          | WHILE exp DO command sequence END ;
+          | IF exp THEN command_sequence ELSE command_sequence FI ;
+          | WHILE exp DO command_sequence END ;
           | READ IDENTIFIER ;
           | WRITE expression ;
 expression ::= NUMBER | IDENTIFIER | '(' expression ')'
@@ -49,8 +49,6 @@ expression ::= NUMBER | IDENTIFIER | '(' expression ')'
 ```
 
 Figure 1.1: Simple
-
-
 
 There are two context sensitive requirements; variables must be declared before they are referenced and a variable may be declared only once.
 
